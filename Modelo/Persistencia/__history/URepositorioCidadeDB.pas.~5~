@@ -1,0 +1,101 @@
+unit URepositorioCidadeDB;
+
+interface
+
+uses
+    URepositorioDB
+  , URepositorioEstadoDB
+  , UPersisteDB
+  , UDM
+  , UCidade
+  , SysUtils
+  , SQLExpr
+  ;
+
+type
+  TRepositorioCidadeDB = class(TRepositorioDB<TCIDADE>)
+  private
+    FRepositorioEstado: TRepositorioEstadoDB;
+
+    procedure AtribuiCidadeParaDB(const coCIDADE: TCIDADE;
+                                  const coSQLQuery: TSQLQuery);
+    procedure AtribuiDBParaCidade(const coCIDADE: TCIDADE);
+
+  public
+    constructor Create;
+
+    procedure Atualiza(const coCIDADE: TCIDADE);
+    procedure Insere(const coCIDADE: TCIDADE);
+
+    function Retorna(const ciId: Integer): TCIDADE;
+  end;
+
+implementation
+
+uses
+    UPersisteEstadoDB
+  ;
+
+{ TPersisteCidadeDB }
+
+constructor TPersisteCidadeDB.Create;
+begin
+  Inherited Create(TBL_CIDADE, FLD_CIDADE_ID);
+
+  FPersisteEstado := TPersisteEstadoDB.Create;
+end;
+
+procedure TPersisteCidadeDB.AtribuiCidadeParaDB(const coCIDADE: TCIDADE;
+                                                const coSQLQuery: TSQLQuery);
+begin
+  with coSQLQuery do
+  begin
+    ParamByName(FLD_CIDADE_ID       ).AsInteger  := FID;
+    ParamByName(FLD_CIDADE_IDESTADO ).AsInteger  := coCIDADE.ESTADO.ID;
+    ParamByName(FLD_CIDADE_NOME     ).AsString   := coCIDADE.NOME;
+    ParamByName(FLD_CIDADE_POPULACAO).AsInteger  := coCIDADE.POPULACAO;
+  end;
+end;
+
+procedure TPersisteCidadeDB.AtribuiDBParaCidade(const coCIDADE: TCIDADE);
+begin
+  with UDM.dmProway.SQLSelect do
+  begin
+    coCIDADE.ID        := FieldByName(FLD_CIDADE_ID       ).AsInteger;
+    coCIDADE.NOME      := FieldByName(FLD_CIDADE_NOME     ).AsString;
+    coCIDADE.POPULACAO := FieldByName(FLD_CIDADE_POPULACAO).AsInteger;
+
+    coCIDADE.ESTADO := FPersisteEstado.Retorna(FieldByName(FLD_CIDADE_IDESTADO).AsInteger);
+  end;
+end;
+
+procedure TPersisteCidadeDB.Atualiza(const coCIDADE: TCIDADE);
+begin
+  FID := coCIDADE.ID;
+
+  PreparaAtualizacao;
+  AtribuiCidadeParaDB(coCIDADE, UDM.dmProway.SQLUpdate);
+  ExecutaAtualizacao(coCIDADE.ID);
+end;
+
+procedure TPersisteCidadeDB.Insere(const coCIDADE: TCIDADE);
+begin
+  PreparaInsercao;
+  AtribuiCidadeParaDB(coCIDADE, UDM.dmProway.SQLInsert);
+  ExecutaInsercao;
+
+  coCIDADE.ID := FID;
+end;
+
+function TPersisteCidadeDB.Retorna(const ciId: Integer): TCIDADE;
+begin
+  Result := nil;
+  if Achou(ciId) then
+    begin
+      Result := TCIDADE.Create;
+      AtribuiDBParaCidade(Result);
+    end;
+end;
+
+
+end.

@@ -1,0 +1,81 @@
+inherited FrmCadastroCidade: TFrmCadastroCidade
+  Caption = 'Cadastro de Cidade'
+  ClientHeight = 202
+  ClientWidth = 590
+  ExplicitWidth = 606
+  ExplicitHeight = 241
+  PixelsPerInch = 96
+  TextHeight = 13
+  inherited pnlCabecalho: TPanel
+    Width = 590
+    ExplicitWidth = 590
+    inherited lbCabecalho: TLabel
+      Width = 188
+      Caption = 'CADASTRO DE CIDADE'
+      ExplicitWidth = 188
+    end
+  end
+  inherited gbLocalizar: TGroupBox
+    Width = 590
+    ExplicitWidth = 590
+  end
+  inherited pnlBotoes: TPanel
+    Top = 161
+    Width = 590
+    ExplicitTop = 161
+    ExplicitWidth = 590
+    inherited btnLimpar: TBitBtn
+      Left = 355
+      ExplicitLeft = 355
+    end
+    inherited btnExcluir: TBitBtn
+      Left = 238
+      ExplicitLeft = 238
+    end
+    inherited btnGravar: TBitBtn
+      Left = 121
+      ExplicitLeft = 121
+    end
+    inherited btnSair: TBitBtn
+      Left = 471
+      ExplicitLeft = 471
+    end
+  end
+  inherited gbInformacoes: TGroupBox
+    Width = 590
+    Height = 75
+    ExplicitLeft = 0
+    ExplicitTop = 86
+    ExplicitWidth = 590
+    ExplicitHeight = 75
+    object edNome: TLabeledEdit
+      Left = 104
+      Top = 32
+      Width = 473
+      Height = 19
+      Color = clInfoBk
+      EditLabel.Width = 27
+      EditLabel.Height = 13
+      EditLabel.Caption = 'Nome'
+      EditLabel.Font.Charset = DEFAULT_CHARSET
+      EditLabel.Font.Color = clWindowText
+      EditLabel.Font.Height = -11
+      EditLabel.Font.Name = 'Tahoma'
+      EditLabel.Font.Style = []
+      EditLabel.ParentFont = False
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      LabelPosition = lpLeft
+      MaxLength = 60
+      ParentFont = False
+      TabOrder = 0
+    end
+  end
+  inherited pmOpcoes: TPopupMenu
+    Left = 544
+    Top = 40
+  end
+end

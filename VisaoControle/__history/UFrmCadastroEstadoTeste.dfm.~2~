@@ -1,0 +1,79 @@
+inherited FrmCRUD1: TFrmCRUD1
+  Caption = 'FrmCRUD1'
+  PixelsPerInch = 96
+  TextHeight = 13
+  object gbInformacoes: TGroupBox
+    Left = 0
+    Top = 86
+    Width = 635
+    Height = 252
+    Align = alClient
+    Caption = ' Informa'#231#245'es '
+    Ctl3D = False
+    Font.Charset = ANSI_CHARSET
+    Font.Color = clBlack
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentCtl3D = False
+    ParentFont = False
+    TabOrder = 3
+    ExplicitWidth = 590
+    ExplicitHeight = 92
+    object lbNome: TLabel
+      Left = 72
+      Top = 54
+      Width = 27
+      Height = 13
+      Alignment = taRightJustify
+      Caption = 'Nome'
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clBlack
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+    end
+    object lbUF: TLabel
+      Left = 86
+      Top = 26
+      Width = 13
+      Height = 13
+      Caption = 'UF'
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clBlack
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+    end
+    object edNome: TEdit
+      Left = 102
+      Top = 51
+      Width = 320
+      Height = 19
+      Color = clInfoBk
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clBlack
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 1
+    end
+    object edUF: TEdit
+      Left = 102
+      Top = 24
+      Width = 124
+      Height = 19
+      Color = clInfoBk
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clBlack
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 0
+    end
+  end
+end

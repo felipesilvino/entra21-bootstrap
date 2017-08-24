@@ -1,0 +1,65 @@
+unit URegraCRUDCidade;
+
+interface
+
+uses
+    URegraCRUD
+  , UEntidade
+  , URepositorioCidade
+  , UCIDADE
+  ;
+
+type
+  TRegraCRUDCidade = class(TRegraCRUD)
+  private
+    procedure ValidaNome(const csNome: String);
+    procedure ValidaCidade(const coCIDADE: TCIDADE);
+
+  protected
+    procedure ValidaInsercao(const coENTIDADE: TENTIDADE); override;
+    procedure ValidaAtualizacao(const coENTIDADE: TENTIDADE); override;
+
+  public
+    constructor Create; override;
+  end;
+
+implementation
+
+uses
+    SysUtils
+  , URepositorioDB
+  , UMensagens
+  ;
+
+{ TRegraCRUDCidade }
+
+constructor TRegraCRUDCidade.Create;
+begin
+  Inherited;
+  FRepositorioDB := TRepositorioDB<TENTIDADE>(TRepositorioCidade.Create);
+end;
+
+procedure TRegraCRUDCidade.ValidaInsercao(const coENTIDADE: TENTIDADE);
+begin
+  Inherited;
+  ValidaCidade(TCIDADE(coENTIDADE));
+end;
+
+procedure TRegraCRUDCidade.ValidaAtualizacao(const coENTIDADE: TENTIDADE);
+begin
+  Inherited;
+  ValidaCidade(TCIDADE(coENTIDADE));
+end;
+
+procedure TRegraCRUDCidade.ValidaCidade(const coCIDADE: TCIDADE);
+begin
+  ValidaNome(coCIDADE.NOME);
+end;
+
+procedure TRegraCRUDCidade.ValidaNome(const csNome: String);
+begin
+  if Trim(csNome) = EmptyStr then
+    raise EValidacaoNegocio.Create(STR_NOME_CIDADE_OBRIGATORIO);
+end;
+
+end.

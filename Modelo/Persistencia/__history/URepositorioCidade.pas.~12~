@@ -1,0 +1,53 @@
+unit URepositorioCidade;
+
+interface
+
+uses
+    URepositorioDB
+  , UCidade
+  , SQLExpr
+  ;
+
+type
+  TRepositorioCidade = class(TRepositorioDB<TCIDADE>)
+  protected
+    //Atribui os dados do banco no objeto
+    procedure AtribuiDBParaEntidade(const coCIDADE: TCIDADE); override;
+    //Atribui os dados do objeto no banco
+    procedure AtribuiEntidadeParaDB(const coCIDADE: TCIDADE; const coSQLQuery: TSQLQuery); override;
+  public
+    constructor Create;
+  end;
+
+implementation
+
+{ TRepositorioCidade }
+
+uses
+    UDM
+  , UENTIDADE
+  ;
+
+constructor TRepositorioCidade.Create;
+begin
+  Inherited Create(TENTIDADE, TBL_CIDADE, FLD_CIDADE_ID, STR_CIDADE);
+end;
+
+procedure TRepositorioCidade.AtribuiDBParaEntidade(const coCIDADE: TCIDADE);
+begin
+  inherited;
+  with dmProway do
+  begin
+    coCIDADE.NOME := SQLSelect.FieldByName(FLD_CIDADE_NOME).AsString;
+  end;
+end;
+
+procedure TRepositorioCidade.AtribuiEntidadeParaDB
+  (const coCIDADE: TCIDADE;
+   const coSQLQuery: TSQLQuery);
+begin
+  inherited;
+  coSQLQuery.ParamByName(FLD_CIDADE_NOME).AsString := coCIDADE.NOME;
+end;
+
+end.

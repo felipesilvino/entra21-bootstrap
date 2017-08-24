@@ -1,0 +1,14 @@
+unit UConstantes;
+
+interface
+
+type
+  TModoPersistencia = (mpMemoria, mpDB);
+
+const
+  CNT_IDADE_MINIMA_CLIENTE   : Integer           = 18; //Anos
+  CNT_MODO_PERSISTENCIA_ATUAL: TModoPersistencia = mpDB;
+
+implementation
+
+end.

@@ -1,0 +1,10 @@
+unit UUtilitarios;
+
+interface
+
+type
+  TTipoOperacaoUsuario = (touIndefinida, touInsercao, touAtualizacao, touExclusao);
+
+implementation
+
+end.

@@ -1,0 +1,67 @@
+unit URepositorioCidadeDB;
+
+interface
+
+uses
+    URepositorioDB
+  , URepositorioEstadoDB
+  , UPersisteDB
+  , UDM
+  , UCidade
+  , SysUtils
+  , SQLExpr
+  ;
+
+type
+  TRepositorioCidadeDB = class(TRepositorioDB<TCIDADE>)
+  private
+    FRepositorioEstadoDB: TRepositorioEstadoDB;
+
+    procedure AtribuiCidadeParaDB(const coCIDADE: TCIDADE;
+                                  const coSQLQuery: TSQLQuery);
+    procedure AtribuiDBParaCidade(const coCIDADE: TCIDADE);
+
+  public
+    constructor Create;
+  end;
+
+implementation
+
+uses
+    UPersisteEstadoDB
+  ;
+
+{ TRepositorioCidadeDB }
+
+constructor TRepositorioCidadeDB.Create;
+begin
+  Inherited Create(TBL_CIDADE, FLD_CIDADE_ID);
+
+  FRepositorioEstadoDB := TRepositorioEstadoDB.Create;
+end;
+
+procedure TRepositorioCidadeDB.AtribuiCidadeParaDB(const coCIDADE: TCIDADE;
+                                                const coSQLQuery: TSQLQuery);
+begin
+  with coSQLQuery do
+  begin
+    ParamByName(FLD_CIDADE_ID       ).AsInteger  := FID;
+    ParamByName(FLD_CIDADE_IDESTADO ).AsInteger  := coCIDADE.ESTADO.ID;
+    ParamByName(FLD_CIDADE_NOME     ).AsString   := coCIDADE.NOME;
+    ParamByName(FLD_CIDADE_POPULACAO).AsInteger  := coCIDADE.POPULACAO;
+  end;
+end;
+
+procedure TRepositorioCidadeDB.AtribuiDBParaCidade(const coCIDADE: TCIDADE);
+begin
+  with UDM.dmProway.SQLSelect do
+  begin
+    coCIDADE.ID        := FieldByName(FLD_CIDADE_ID       ).AsInteger;
+    coCIDADE.NOME      := FieldByName(FLD_CIDADE_NOME     ).AsString;
+    coCIDADE.POPULACAO := FieldByName(FLD_CIDADE_POPULACAO).AsInteger;
+
+    coCIDADE.ESTADO := FRepositorioEstadoDB.Retorna(FieldByName(FLD_CIDADE_IDESTADO).AsInteger);
+  end;
+end;
+
+end.

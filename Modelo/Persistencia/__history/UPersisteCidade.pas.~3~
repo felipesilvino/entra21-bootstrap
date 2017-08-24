@@ -1,0 +1,39 @@
+unit UPersisteCidade;
+
+interface
+
+uses
+    UCidade
+  , UPersiste
+  ;
+
+type
+  IPersisteCidade = interface
+  ['{0A3C029E-7951-4031-9832-DE86295F3368}']
+    procedure Atualiza(const coCIDADE: TCIDADE);
+    procedure Insere(const coCIDADE: TCIDADE);
+    procedure Exclui(const ciId: Integer);
+
+    function Achou(const ciId: Integer): Boolean;
+    function Retorna(const ciId: Integer): TCIDADE;
+  end;
+
+  TFabricaPersiteCidade = class
+  public
+    class function NovoRepositorio(const ceModoPersistencia: TModoPersistencia): IPersisteCidade;
+  end;
+
+implementation
+
+uses
+    UPersisteCidadeDB
+  ;
+
+{ TFabricaPersiteCidade }
+
+class function TFabricaPersiteCidade.NovoRepositorio(const ceModoPersistencia: TModoPersistencia): IPersisteCidade;
+begin
+  Result := TPersisteCidadeDB.Create;
+end;
+
+end.

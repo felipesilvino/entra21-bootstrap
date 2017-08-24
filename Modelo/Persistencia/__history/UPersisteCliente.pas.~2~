@@ -1,0 +1,40 @@
+unit UPersisteCliente;
+
+interface
+
+uses
+    UCliente
+  , UPersiste
+  ;
+
+type
+  IPersisteCliente = interface
+  ['{20975F82-E675-4C4C-9566-1BB61D0F38A8}']
+    procedure Atualiza(const coCLIENTE: TCLIENTE);
+    procedure Insere(const coCLIENTE: TCLIENTE);
+    procedure Exclui(const ciId: Integer);
+
+    function Achou(const ciId: Integer): Boolean;
+    function Retorna(const ciId: Integer): TCLIENTE;
+  end;
+
+  TFabricaPersisteCliente = class
+  public
+    function NovoRepositorio(const ceModoPersistencia: TModoPersistencia): IPersisteCliente;
+  end;
+
+implementation
+
+uses
+    UPersisteClienteDB
+  , UPersisteClienteMemoria
+  ;
+
+{ TFabricaPersisteCliente }
+
+function TFabricaPersisteCliente.NovoRepositorio: IPersisteCliente;
+begin
+
+end;
+
+end.

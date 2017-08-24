@@ -1,0 +1,143 @@
+unit UFrmConsultaCliente;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, ComCtrls, Buttons, StdCtrls, PwCtrls, ExtCtrls
+  , UPersisteCliente
+  , UCLIENTE  
+  ;
+
+type
+  TFrmConsultaCliente = class(TForm)
+    pnlCabecalho: TPanel;
+    lbCabecalho: TLabel;
+    gbLocalizar: TGroupBox;
+    lbCodigo: TLabel;
+    btnLocalizar: TButton;
+    edCodigo: TIntegerEdit;
+    pnlBotoes: TPanel;
+    btnLimpar: TBitBtn;
+    btnSair: TBitBtn;
+    pcFundo: TPageControl;
+    procedure edCodigoExit(Sender: TObject);
+    procedure btnSairClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure btnLimparClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure btnLocalizarClick(Sender: TObject);
+    procedure edCodigoKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+  private
+    FPersisteCliente: IPersisteCliente;
+
+    function RetornaAbaCliente(const coCLIENTE: TCLIENTE): TTabSheet;
+    function RetornaNovaAba(const coCLIENTE: TCLIENTE): TTabSheet;
+  end;
+
+var
+  FrmConsultaCliente: TFrmConsultaCliente;
+
+implementation
+
+uses
+    UFrmInternoConsultaCliente
+  , UPersisteClienteDB
+  , UMensagens
+  , UFrmPesquisa
+  ;
+
+{$R *.dfm}
+
+procedure TFrmConsultaCliente.edCodigoExit(Sender: TObject);
+var
+  loAba       : TTabSheet;
+  loCLIENTE   : TCLIENTE;
+begin
+  if edCodigo.IntegerNumber <> 0 then
+    if FPersisteCliente.Achou(edCodigo.IntegerNumber) then
+       begin
+         loCLIENTE := FPersisteCliente.Retorna(edCodigo.IntegerNumber);
+         loAba     := RetornaAbaCliente(loCLIENTE);
+
+         if not Assigned(loAba) then
+            begin
+              loAba := RetornaNovaAba(loCLIENTE);
+              TFrmInternoConsultaCliente.Mostra(loCLIENTE, loAba);
+            end;
+
+         pcFundo.ActivePage := loAba;
+       end
+    else
+       begin
+         Application.MessageBox(pChar(Format(STR_CLIENTE_NAO_ENCONTRADO
+                                           , [edCodigo.IntegerNumber]))
+                              , pChar(STR_ATENCAO)
+                              , MB_OK Or MB_ICONWARNING);
+         edCodigo.SetFocus;
+       end;
+end;
+
+procedure TFrmConsultaCliente.edCodigoKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if key = VK_F7 then
+    btnLocalizarClick(edCodigo);
+end;
+
+procedure TFrmConsultaCliente.btnSairClick(Sender: TObject);
+begin
+  Close;
+end;
+
+procedure TFrmConsultaCliente.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  Action := caFree;
+end;
+
+procedure TFrmConsultaCliente.btnLimparClick(Sender: TObject);
+begin
+  while pcFundo.PageCount <> 0 do
+    pcFundo.Pages[0].Free;
+
+  edCodigo.IntegerNumber := 0;
+  edCodigo.SetFocus;    
+end;
+
+procedure TFrmConsultaCliente.FormCreate(Sender: TObject);
+begin
+  FPersisteCliente := TPersisteClienteDB.Create;
+end;
+
+procedure TFrmConsultaCliente.btnLocalizarClick(Sender: TObject);
+begin
+  //edCodigo.IntegerNumber := TfrmPesquisa.MostrarPesquisa(VW_CLIENTE
+  //                                                     , FLD_VW_CLIENTE_ID
+  //                                                     , FLD_VW_CLIENTE_NOME);
+  if edCodigo.IntegerNumber <> 0 then
+    edCodigoExit(btnLocalizar);
+end;
+
+function TFrmConsultaCliente.RetornaAbaCliente(const coCLIENTE: TCLIENTE): TTabSheet;
+var
+  liIndice: Integer;
+begin
+  Result := Nil;
+  for liIndice := 0 to Pred(pcFundo.PageCount) do
+    if pcFundo.Pages[liIndice].Tag = coCLIENTE.ID then
+       begin
+         Result := pcFundo.Pages[liIndice];
+         Exit;
+       end;
+end;
+
+function TFrmConsultaCliente.RetornaNovaAba(const coCLIENTE: TCLIENTE): TTabSheet;
+begin
+  Result             := TTabSheet.Create(pcFundo);
+  Result.PageControl := pcFundo;
+  Result.Caption     := Format(STR_CAPTION_ABA_CONSULTAS, [coCLIENTE.ID
+                                                         , Copy(coCLIENTE.NOME, 1, 8)]);
+  Result.Tag         := coCLIENTE.ID;
+end;
+
+end.

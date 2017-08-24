@@ -1,0 +1,38 @@
+unit UCidade;
+
+interface
+
+uses
+    UEntidade
+  ;
+
+type
+  TCIDADE = class(TENTIDADE)
+  private
+    FNome: String;
+
+  public
+    constructor Create; override;
+    property NOME: String read FNome write FNome;
+  end;
+
+const
+  TBL_CIDADE      = 'CIDADE';
+  FLD_CIDADE_ID   = 'ID';
+  FLD_CIDADE_NOME = 'NOME';
+
+resourcestring
+  STR_CIDADE = 'Cidade';
+
+implementation
+
+{ TCIDADE }
+
+{ TCIDADE }
+
+constructor TCIDADE.Create;
+begin
+  inherited;
+end;
+
+end.

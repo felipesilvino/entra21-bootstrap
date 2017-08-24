@@ -1,0 +1,20 @@
+unit UCidade;
+
+interface
+
+uses
+    UEntidade
+  ;
+
+type
+  TCIDADE = class(TENTIDADE)
+  private
+    FNome: String;
+
+  public
+    property NOME: String read FNome write FNome;
+  end;
+
+implementation
+
+end.

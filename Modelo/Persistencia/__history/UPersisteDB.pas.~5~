@@ -1,0 +1,201 @@
+unit UPersisteDB;
+
+interface
+
+uses
+    SqlExpr
+  ;
+
+type
+  TPersisteDB = class(TInterfacedObject)
+  private
+    FNomeTabela : String;
+    FNomeCampoPK: String;
+    FNomeGerador: String;
+
+    //Pede para o generator o proximo ID ao fazer insert
+    function RetornaNovoId: Integer;
+
+  protected
+    FID: Integer;
+
+  protected
+    //Prepara na query o comando SQL para fazer o insert
+    procedure PreparaInsercao;
+    //Excuta a query de inserção
+    procedure ExecutaInsercao;
+    //Prepara na query o comando SQL para fazer o update
+    procedure PreparaAtualizacao;
+    //Executa a query de atualização
+    procedure ExecutaAtualizacao(const ciPK: Integer);
+
+    //Retorna uma string formada para insert ou update com todos os campos da tabela
+    //carregados dinamicamente
+    function RetornaParametros(const csFormatacao: String): String;
+
+  public
+    constructor Create(const csNomeTabela : String;
+                       const csNomeCampoPK: String);
+
+    //Exclui um registro
+    procedure Exclui(const ciPK: Integer);
+
+    //Retorna registro unico
+    function Achou(const ciPK: Integer): Boolean;
+    //Retorna N registros
+    function PesquisaTodos: TSQLDataSet;
+  end;
+
+const
+  CNT_SELECT_UNIQUE = 'select * from %s where %s = :%1:s';
+
+implementation
+
+uses
+    UDM
+  , SysUtils
+  , DB;
+
+const
+  CNT_SELECT_ALL        = 'select * from %s';
+  CNT_SELECT_GEN_ID     = 'select gen_id(%s, 1) from RDB$DATABASE';
+  CNT_INSERT            = 'insert into %s values (%s)';
+  CNT_NOME_GERADOR      = 'gen_%s_%s';
+  CNT_UPDATE            = 'update %s set %s where %s = :%2:s';
+  CNT_DELETE            = 'delete from %s where %s = :%1:s';
+
+  FLD_METADADOS_NOME_COLUNA = 'column_name';
+  FLD_GEN_ID                = 'gen_id';
+
+  //Tem como fazer generico
+  CNT_FORMATACAO_INSERT = ':%s, ';
+  CNT_FORMATACAO_UPDATE = '%0:s = :%0:s, ';
+
+{ TPersisteDB }
+
+constructor TPersisteDB.Create(const csNomeTabela: String;
+                               const csNomeCampoPK: String);
+begin
+  FNomeTabela  := csNomeTabela;
+  FNomeCampoPK := csNomeCampoPK;
+  FNomeGerador := Format(CNT_NOME_GERADOR, [csNomeTabela, csNomeCampoPK]);
+end;
+
+function TPersisteDB.Achou(const ciPK: Integer): Boolean;
+begin
+  UDM.dmProway.SQLSelect.Close;
+  //select *
+  //  from 'nome da tabela'
+  // where 'campo PK' = :'campo PK'
+  UDM.dmProway.SQLSelect.CommandText := Format(CNT_SELECT_UNIQUE, [FNomeTabela
+                                                                 , FNomeCampoPK]);
+  UDM.dmProway.SQLSelect.ParamByName(FNomeCampoPK).AsInteger := ciPK;
+  UDM.dmProway.SQLSelect.Open;
+
+  Result := Not UDM.dmProway.SQLSelect.Eof;
+end;
+
+procedure TPersisteDB.Exclui(const ciPK: Integer);
+begin
+  UDM.dmProway.ValidaTransacaoAtiva;
+
+  UDM.dmProway.SQLDelete.Close;
+  UDM.dmProway.SQLDelete.SQL.Clear;
+  UDM.dmProway.SQLDelete.SQL.Add(Format(CNT_DELETE, [FNomeTabela
+                                                   , FNomeCampoPK]));
+  UDM.dmProway.SQLDelete.Prepared := True;
+  UDM.dmProway.SQLDelete.ParamByName(FNomeCampoPK).AsInteger := ciPK;
+  UDM.dmProway.SQLDelete.ExecSQL;
+end;
+
+procedure TPersisteDB.ExecutaAtualizacao(const ciPK: Integer);
+begin
+  UDM.dmProway.SQLUpdate.ParamByName(FNomeCampoPK).AsInteger := ciPK;
+  UDM.dmProway.SQLUpdate.ExecSQL;
+end;
+
+procedure TPersisteDB.ExecutaInsercao;
+begin
+  UDM.dmProway.SQLInsert.ExecSQL;
+end;
+
+function TPersisteDB.PesquisaTodos: TSQLDataSet;
+begin
+  UDM.dmProway.SQLSelect.Close;
+
+  //select *
+  //  from 'nome da tabela'
+  UDM.dmProway.SQLSelect.CommandText := Format(CNT_SELECT_ALL, [FNomeTabela]);
+  UDM.dmProway.SQLSelect.Open;
+
+  Result := UDM.dmProway.SQLSelect;
+end;
+
+procedure TPersisteDB.PreparaAtualizacao;
+begin
+  UDM.dmProway.SQLUpdate.Close;
+
+  //update 'nome da tabela'
+  //   set 'nome dos campos'
+  // where 'campo PK' = :'campo PK'
+  UDM.dmProway.SQLUpdate.SQL.Clear;
+  UDM.dmProway.SQLUpdate.SQL.Add(Format(CNT_UPDATE, [FNomeTabela
+                                                   , RetornaParametros(CNT_FORMATACAO_UPDATE)
+                                                   , FNomeCampoPK]));
+  UDM.dmProway.SQLUpdate.Prepared := True;
+end;
+
+procedure TPersisteDB.PreparaInsercao;
+begin
+  FID := RetornaNovoId;
+
+  //insert into 'nome da tabela' values ('valores dos campos')
+  UDM.dmProway.SQLInsert.Close;
+  UDM.dmProway.SQLInsert.SQL.Clear;
+  UDM.dmProway.SQLInsert.SQL.Add(Format(CNT_INSERT, [FNomeTabela
+                                                   , RetornaParametros(CNT_FORMATACAO_INSERT)
+                                                   , FNomeCampoPK]));
+  UDM.dmProway.SQLInsert.Prepared := True;
+end;
+
+function TPersisteDB.RetornaParametros(const csFormatacao: String): String;
+var
+  lsNomeCampo: String;
+  loCampo: TField;
+begin
+  Result := EmptyStr;
+
+  UDM.dmProway.SQLTable.GetMetadata := True;
+  UDM.dmProway.SQLTable.TableName := FNomeTabela;
+  UDM.dmProway.SQLTable.Active := True;
+
+  for loCampo in UDM.dmProway.SQLTable.Fields do
+    begin
+      lsNomeCampo := loCampo.Name;
+      Result      := Result + Format(csFormatacao, [lsNomeCampo]);
+    end;
+
+  UDM.dmProway.SQLMetadados.Close;
+  UDM.dmProway.SQLMetadados.SetSchemaInfo(stColumns, FNomeTabela, EmptyStr);
+  UDM.dmProway.SQLMetadados.Open;
+  while not UDM.dmProway.SQLMetadados.Eof do
+    begin
+      lsNomeCampo := UDM.dmProway.SQLMetadados.FieldByName(FLD_METADADOS_NOME_COLUNA).AsString;
+      Result      := Result + Format(csFormatacao, [lsNomeCampo]);
+
+      UDM.dmProway.SQLMetadados.Next;
+    end;
+
+  Result := Copy(Result, 1, Length(Result) -2);
+end;
+
+function TPersisteDB.RetornaNovoId: Integer;
+begin
+  UDM.dmProway.SQLSelect.Close;
+  UDM.dmProway.SQLSelect.CommandText := Format(CNT_SELECT_GEN_ID, [FNomeGerador]);
+  UDM.dmProway.SQLSelect.Open;
+
+  Result := UDM.dmProway.SQLSelect.FieldByName(FLD_GEN_ID).AsInteger;
+end;
+
+end.

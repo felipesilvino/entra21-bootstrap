@@ -1,0 +1,92 @@
+unit UCliente;
+
+interface
+
+uses
+    Controls
+  , UCidade
+  , UEntidade
+  ;
+
+type
+  TSexo = (sMasculino
+         , sFeminino);
+
+  TEstadoCivil = (ecSolteiro
+                , ecCasado
+                , ecViuvo
+                , ecDesquitado
+                , ecDivorciado
+                , ecAmasiado);
+
+  TCLIENTE = class(TENTIDADE)
+  private
+    FNome          : String;
+    FCPF           : String;
+    FSexo          : TSexo;
+    FDataNascimento: TDate;
+    FEstadoCivil   : TEstadoCivil;
+    FPossuiVeiculo : Boolean;
+    FRendaMensal   : Double;
+
+    //Join
+    FCIDADE: TCIDADE;
+
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+
+    property NOME           : String       read FNome           write FNome;
+    property CPF            : String       read FCPF            write FCPF;
+    property SEXO           : TSexo        read FSexo           write FSexo;
+    property DATA_NASCIMENTO: TDate        read FDataNascimento write FDataNascimento;
+    property ESTADO_CIVIL   : TEstadoCivil read FEstadoCivil    write FEstadoCivil;
+    property POSSUI_VEICULO : Boolean      read FPossuiVeiculo  write FPossuiVeiculo;
+    property RENDA_MENSAL   : Double       read FRendaMensal    write FRendaMensal;
+    property CIDADE         : TCIDADE      read FCIDADE         write FCIDADE; 
+  end;
+
+const
+  CNT_DESCRICAO_ESTADO_CIVIL: Array[TEstadoCivil] of String = ('Solteiro'
+                                                             , 'Casado'
+                                                             , 'Viuvo'
+                                                             , 'Desquitado'
+                                                             , 'Divorciado'
+                                                             , 'Amasiado');
+
+  TBL_CLIENTE                 = 'CLIENTE';
+  FLD_CLIENTE_ID              = 'ID';
+  FLD_CLIENTE_NOME            = 'NOME';
+  FLD_CLIENTE_DATA_NASCIMENTO = 'DATA_NASCIMENTO';
+  FLD_CLIENTE_CPF             = 'CPF';
+  FLD_CLIENTE_SEXO            = 'SEXO';
+  FLD_CLIENTE_ESTADO_CIVIL    = 'ESTADO_CIVIL';
+  FLD_CLIENTE_POSSUI_VEICULO  = 'POSSUI_VEICULO';
+  FLD_CLIENTE_RENDA_MENSAL    = 'RENDA_MENSAL';
+  FLD_CLIENTE_IDCIDADE        = 'IDCIDADE';
+
+  VW_CLIENTE          = 'VW_CLIENTE';
+  FLD_VW_CLIENTE_NOME = 'Nome';
+  FLD_VW_CLIENTE_CPF  = 'CPF';
+  FLD_VW_CLIENTE_ID   = 'Id.';
+
+implementation
+
+uses
+    SysUtils
+  ;
+
+{ TCLIENTE }
+
+constructor TCLIENTE.Create;
+begin
+  FCIDADE := TCIDADE.Create;
+end;
+
+destructor TCLIENTE.Destroy;
+begin
+  FreeAndNil(FCIDADE);
+  inherited;
+end;
+
+end.

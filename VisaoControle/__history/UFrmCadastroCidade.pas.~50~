@@ -1,0 +1,89 @@
+unit UFrmCadastroCidade;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, UFrmCRUD, ExtCtrls, Menus, Buttons, StdCtrls
+  , UENTIDADE
+  , UCIDADE
+  , URegraCRUDCidade
+  , URegraCRUD
+  , UUtilitarios
+  ;
+
+type
+  TFrmCadastroCidade = class(TFrmCRUD)
+    gbInformacoes: TGroupBox;
+    edNome: TLabeledEdit;
+  private
+    FRegraCRUDCidade: TRegraCRUDCidade;
+    FCIDADE: TCIDADE;
+
+  protected
+    procedure PreencheEntidade; override;
+    procedure PreencheFormulario; override;
+    procedure Inicializa; override;
+    procedure PosicionaCursorPrimeiroCampo; override;
+    procedure HabilitaCampos(const ceTipoOperacaoUsuario: TTipoOperacaoUsuario); override;
+  end;
+
+var
+  FrmCadastroCidade: TFrmCadastroCidade;
+
+implementation
+
+{$R *.dfm}
+
+uses
+    UMensagens
+  , UOpcaoPesquisa
+  ;
+
+
+{ TFrmCadastroCidade }
+
+procedure TFrmCadastroCidade.HabilitaCampos(const ceTipoOperacaoUsuario: TTipoOperacaoUsuario);
+begin
+  inherited;
+  gbInformacoes.Enabled := ceTipoOperacaoUsuario in [touAtualizacao, touInsercao];
+end;
+
+procedure TFrmCadastroCidade.Inicializa;
+begin
+  inherited;
+
+  DefineEntidade(@FCIDADE, TCIDADE);
+  DefineRegraCRUD(@FRegraCRUDCidade, TRegraCRUDCidade);
+
+  AdicionaOpcaoPesquisa(TOpcaoPesquisa
+    .Create
+    .DefineVisao(TBL_CIDADE)
+      .DefineNomePesquisa('Por Nome')
+    .AdicionaFiltro(FLD_CIDADE_NOME)
+    .DefineNomeCampoRetorno(FLD_CIDADE_ID));
+
+  AdicionaOpcaoPesquisa(TOpcaoPesquisa
+    .Create
+    .DefineVisao(VW_CIDADE)
+    .DefineNomePesquisa('Por Data Nascimento')
+    .AdicionaFiltro(VW_CIDADE_NOME)
+    .DefineNomeCampoRetorno(VW_CIDADE_ID));
+end;
+
+procedure TFrmCadastroCidade.PreencheEntidade;
+begin
+  FCIDADE.NOME := edNome.Text;
+end;
+
+procedure TFrmCadastroCidade.PreencheFormulario;
+begin
+  edNome.Text := FCIDADE.NOME;
+end;
+
+procedure TFrmCadastroCidade.PosicionaCursorPrimeiroCampo;
+begin
+  edNome.SetFocus;
+end;
+
+end.

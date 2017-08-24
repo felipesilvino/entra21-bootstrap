@@ -1,0 +1,213 @@
+unit UFrmCadastroEstado;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, Buttons, ExtCtrls, PwCtrls
+  , URegraCadastroEstado
+  , UUtilitarios
+  , UESTADO
+  , UMensagens
+  , UDM
+  , UFrmPesquisa
+  ;
+
+type
+  TFrmCadastroEstado = class(TForm)
+    pnlBotoes: TPanel;
+    btnLimpar: TBitBtn;
+    btnExcluir: TBitBtn;
+    btnGravar: TBitBtn;
+    btnSair: TBitBtn;
+    btnNovo: TBitBtn;
+    pnlCabecalho: TPanel;
+    lbCabecalho: TLabel;
+    gbLocalizar: TGroupBox;
+    btnLocalizar: TButton;
+    gbInformacoes: TGroupBox;
+    lbNome: TLabel;
+    edNome: TEdit;
+    lbUF: TLabel;
+    edUF: TEdit;
+    edCodigo: TIntegerEdit;
+    lbCodigo: TLabel;
+    procedure btnLocalizarClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormCreate(Sender: TObject);
+    procedure btnNovoClick(Sender: TObject);
+    procedure btnGravarClick(Sender: TObject);
+    procedure btnExcluirClick(Sender: TObject);
+    procedure btnLimparClick(Sender: TObject);
+    procedure btnSairClick(Sender: TObject);
+    procedure edCodigoExit(Sender: TObject);
+    procedure edUFExit(Sender: TObject);
+  private
+    FESTADO: TESTADO;
+
+    FRegraCadastroEstado: TRegraCadastroEstado;
+    FTipoOperacaoUsuario: TTipoOperacaoUsuario;
+
+    procedure HabilitaCampos(const ceTipoOperacaoUsuario: TTipoOperacaoUsuario);
+    procedure LimpaCampos;
+  end;
+
+var
+  FrmCadastroEstado: TFrmCadastroEstado;
+
+implementation
+
+{$R *.dfm}
+
+uses
+    UDialogo
+  ;
+{ TFrmCadastroEstado }
+
+procedure TFrmCadastroEstado.FormCreate(Sender: TObject);
+begin
+  FRegraCadastroEstado := TRegraCadastroEstado.Create;
+
+  LimpaCampos;
+  HabilitaCampos(touIndefinida);
+end;
+
+procedure TFrmCadastroEstado.HabilitaCampos(const ceTipoOperacaoUsuario: TTipoOperacaoUsuario);
+begin
+  FTipoOperacaoUsuario := ceTipoOperacaoUsuario;
+
+  edCodigo.Enabled      := FTipoOperacaoUsuario in [touIndefinida];
+  btnLocalizar.Enabled  := edUF.Enabled;
+  gbInformacoes.Enabled := FTipoOperacaoUsuario in [touAtualizacao, touInsercao];
+  btnGravar.Enabled     := FTipoOperacaoUsuario in [touAtualizacao, touInsercao];
+  btnExcluir.Enabled    := FTipoOperacaoUsuario in [touAtualizacao, touExclusao];
+  btnNovo.Enabled       := FTipoOperacaoUsuario in [touIndefinida];
+end;
+
+procedure TFrmCadastroEstado.LimpaCampos;
+begin
+  edCodigo.IntegerNumber := 0;
+  edUF.Clear;
+  edNome.Clear;
+end;
+
+procedure TFrmCadastroEstado.btnExcluirClick(Sender: TObject);
+begin
+  if TDialogo.Questiona(STR_ESTADO_DESEJA_EXCLUIR) then
+    begin
+      UDM.dmProway.IniciaTransacao;
+      try
+        FRegraCadastroEstado.Exclui(edCodigo.IntegerNumber);
+
+        btnLimpar.Click;
+        edCodigo.SetFocus;
+
+        UDM.dmProway.FinalizaTransacao;
+      except
+        on E: Exception do
+          begin
+            UDM.dmProway.AbortaTransacao;
+            TDialogo.Erro(E.Message);
+          end;
+      end;
+    end;
+end;
+
+procedure TFrmCadastroEstado.btnGravarClick(Sender: TObject);
+var
+  lsMensagem: String;
+begin
+  FESTADO.UF   := edUF.Text;
+  FESTADO.NOME := edNome.Text;
+
+  UDM.dmProway.IniciaTransacao;
+  try
+    case FTipoOperacaoUsuario of
+         touInsercao:
+           Begin
+             FRegraCadastroEstado.Insere(FESTADO);
+             lsMensagem := Format(STR_ESTADO_GRAVADO_COM_SUCESSO
+                                , [FESTADO.ID]);
+           End;
+      touAtualizacao:
+           Begin
+             FRegraCadastroEstado.Atualiza(FESTADO);
+             lsMensagem := STR_ESTADO_ATUALIZADO_COM_SUCESSO;
+           End;
+    end;
+    UDM.dmProway.FinalizaTransacao;
+    TDialogo.Informacao(lsMensagem);
+
+    btnLimpar.Click;
+    edUF.SetFocus;
+  except
+    on E: Exception do
+      begin
+        UDM.dmProway.AbortaTransacao;
+        TDialogo.Erro(E.Message);
+      end;
+  end;
+end;
+
+procedure TFrmCadastroEstado.btnLimparClick(Sender: TObject);
+begin
+  LimpaCampos;
+  HabilitaCampos(touIndefinida);
+
+  edUF.SetFocus;
+end;
+
+procedure TFrmCadastroEstado.btnLocalizarClick(Sender: TObject);
+begin
+  edCodigo.Text := TfrmPesquisa.MostrarPesquisa(VW_ESTADO
+                                              , FLD_VW_ESTADO_ID
+                                              , FLD_VW_ESTADO_UF);
+  if edCodigo.IntegerNumber <> 0 then
+    edCodigoExit(btnLocalizar);
+end;
+
+procedure TFrmCadastroEstado.btnNovoClick(Sender: TObject);
+begin
+  HabilitaCampos(touInsercao);
+  edUF.SetFocus;
+
+  FESTADO := TESTADO.Create;
+end;
+
+procedure TFrmCadastroEstado.btnSairClick(Sender: TObject);
+begin
+  Close;
+end;
+
+procedure TFrmCadastroEstado.edCodigoExit(Sender: TObject);
+begin
+  if edCodigo.IntegerNumber <> 0 then
+    try
+      FESTADO := FRegraCadastroEstado.Retorna(edCodigo.IntegerNumber);
+
+      edUF.Text   := FESTADO.UF;
+      edNome.Text := FESTADO.NOME;
+
+      HabilitaCampos(touAtualizacao);
+      edUF.SetFocus;
+    except
+      on E: Exception do
+        begin
+          TDialogo.Erro(E.Message);
+          edUF.SetFocus;
+        end;
+    end;
+end;
+
+procedure TFrmCadastroEstado.edUFExit(Sender: TObject);
+begin
+  if Trim(edUF.Text) <> EmptyStr then
+
+end;
+
+procedure TFrmCadastroEstado.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  Action := caFree;
+end;
+
+end.

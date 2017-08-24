@@ -1,0 +1,148 @@
+unit URegraCadastroCliente;
+
+interface
+
+uses
+    UCliente
+  , UCidade
+  , DateUtils
+  , SysUtils
+  , UMensagens
+  , UConstantes
+  , URepositorio
+  , URegraCRUD
+  , UEntidade
+  ;
+
+type
+  TRegraCadastroCliente = class(TRegraCRUD)
+  private
+    FRepositorioCliente: IRepositorio<TCLIENTE>;
+    FRepositorioCidade: IRepositoriO<TCIDADE>;
+
+    procedure Valida(const coCLIENTE: TCLIENTE);
+
+  public
+    constructor Create; overload; override;
+    constructor Create(const ceModoPersistencia: TModoPersistencia); reintroduce; overload;
+
+    procedure ValidaDataNascimento(const coDataNascimento: TDateTime);
+    procedure ValidaNome(const csNome: String);
+    procedure ValidaCPF(const csCPF: String);
+    procedure ValidaExistencia(const ciId: Integer); override;
+    procedure ValidaCidade(const ciId: Integer);
+
+    procedure Insere(const coENTIDADE: TENTIDADE); override;
+    procedure Atualiza(const coENTIDADE: TENTIDADE); override;
+    procedure Exclui(const ciId: Integer); override;
+
+    function Retorna(const ciId: Integer): TENTIDADE; override;
+    function RetornaCidade(const ciId: Integer): TENTIDADE;
+  end;
+
+implementation
+
+uses
+    URepositorioClienteDB
+  , URepositorioCidadeDB
+  ;
+
+{ TRegraCadastroCliente }
+
+constructor TRegraCadastroCliente.Create(const ceModoPersistencia: TModoPersistencia);
+begin
+  FRepositorioCliente := TRepositorioClienteDB.Create;
+  FRepositorioCidade  := TRepositorioCidadeDB.Create;
+end;
+
+constructor TRegraCadastroCliente.Create;
+begin
+  inherited;
+  Create(mpDB);
+end;
+
+procedure TRegraCadastroCliente.Exclui(const ciId: Integer);
+begin
+  ValidaExistencia(ciId);
+  FRepositorioCliente.Exclui(ciId);
+end;
+
+procedure TRegraCadastroCliente.Insere(const coENTIDADE: TENTIDADE);
+var
+  loCLIENTE: TCLIENTE;
+begin
+  loCLIENTE := TCLIENTE(coENTIDADE);
+
+  Valida(loCLIENTE);
+  FRepositorioCliente.Insere(loCLIENTE);
+end;
+
+procedure TRegraCadastroCliente.Atualiza(const coENTIDADE: TENTIDADE);
+var
+  loCLIENTE: TCLIENTE;
+begin
+  loCLIENTE := TCLIENTE(coENTIDADE);
+
+  ValidaExistencia(loCLIENTE.ID);
+  Valida(loCLIENTE);
+
+  FPersisteCliente.Atualiza(loCLIENTE);
+end;
+
+function TRegraCadastroCliente.Retorna(const ciId: Integer): TENTIDADE;
+begin
+  Result := FPersisteCliente.Retorna(ciId);
+end;
+
+function TRegraCadastroCliente.RetornaCidade(const ciId: Integer): TENTIDADE;
+begin
+  Result := FPersisteCidade.Retorna(ciId);
+end;
+
+procedure TRegraCadastroCliente.ValidaCPF(const csCPF: String);
+var
+  lsAux: String;
+begin
+  lsAux := StringReplace(csCPF, '.', '', [rfReplaceAll]);
+  lsAux := StringReplace(lsAux, '-', '', [rfReplaceAll]);
+
+  if Trim(lsAux) = EmptyStr then
+    raise Exception.Create(STR_CLIENTE_CPF_NAO_FOI_INFORMADO);
+
+  if Length(Trim(lsAux)) <> 11 Then
+    raise Exception.Create(STR_CLIENTE_CPF_NUMERO_CARACTERES_INVALIDO);
+end;
+
+procedure TRegraCadastroCliente.ValidaDataNascimento(const coDataNascimento: TDateTime);
+begin
+  if YearsBetween(Now, coDataNascimento) < CNT_IDADE_MINIMA_CLIENTE then
+    raise Exception.CreateFmt(STR_CLIENTE_IDADE_INVALIDA
+                            , [CNT_IDADE_MINIMA_CLIENTE]);
+end;
+
+procedure TRegraCadastroCliente.ValidaNome(const csNome: String);
+begin
+  if Trim(csNome) = EmptyStr then
+    raise Exception.Create(STR_CLIENTE_NOME_NAO_FOI_INFORMADO);
+end;
+
+procedure TRegraCadastroCliente.Valida(const coCLIENTE: TCLIENTE);
+begin
+  ValidaDataNascimento(coCLIENTE.DATA_NASCIMENTO);
+  ValidaNome(coCLIENTE.NOME);
+  ValidaCPF(coCLIENTE.CPF);
+end;
+
+procedure TRegraCadastroCliente.ValidaCidade(const ciId: Integer);
+begin
+  if not FPersisteCidade.Achou(ciId) then
+    raise Exception.CreateFmt(STR_CIDADE_NAO_ENCONTRADA, [ciId]);
+end;
+
+procedure TRegraCadastroCliente.ValidaExistencia(const ciId: Integer);
+begin
+  if not FPersisteCliente.Achou(ciId) then
+    raise Exception.CreateFmt(STR_CLIENTE_NAO_ENCONTRADO, [ciId]);
+end;
+
+end.

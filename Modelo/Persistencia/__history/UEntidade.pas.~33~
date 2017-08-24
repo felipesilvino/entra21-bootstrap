@@ -1,0 +1,20 @@
+unit UEntidade;
+
+interface
+
+type
+  TENTIDADE = class abstract
+  protected
+    FId: Integer;
+
+  public
+    property ID: Integer read FId write FId;
+  end;
+
+  TEntidadeClasse = class of TENTIDADE;
+
+implementation
+
+{ TENTIDADE }
+
+end.

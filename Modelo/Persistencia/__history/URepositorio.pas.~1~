@@ -1,0 +1,10 @@
+unit URepositorio;
+
+interface
+
+type
+  TModoPersistencia = (mpBancoDados, mpMemoria);
+
+implementation
+
+end.

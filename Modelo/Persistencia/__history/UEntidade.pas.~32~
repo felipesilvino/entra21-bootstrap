@@ -1,0 +1,27 @@
+unit UEntidade;
+
+interface
+
+type
+  TENTIDADE = class abstract
+  protected
+    FId: Integer;
+
+  public
+    constructor Create; virtual;
+
+    property ID: Integer read FId write FId;
+  end;
+
+  TEntidadeClasse = class of TENTIDADE;
+
+implementation
+
+{ TENTIDADE }
+
+constructor TENTIDADE.Create;
+begin
+  Inherited;
+end;
+
+end.

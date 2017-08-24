@@ -1,0 +1,78 @@
+unit URepositorioEstadoDB;
+
+interface
+
+uses
+    URepositorioDB
+  , UDM
+  , UEstado
+  , SysUtils
+  , SQLExpr
+  ;
+
+type
+  TRepositorioEstadoDB = class(TRepositorioDB<TESTADO>)
+  private
+    procedure AtribuiEntidadeParaDB(const coESTADO: TESTADO;
+                                    const coSQLQuery: TSQLQuery); override;
+    procedure AtribuiDBParaENtidade(const coESTADO: TESTADO); override;
+
+  public
+    constructor Create;
+
+    function AchouUF(const csUF: String): Boolean;
+    function RetornaUF(const csUF: String): TESTADO;
+  end;
+
+implementation
+
+{ TRepositorioEstadoDB }
+
+constructor TRepositorioEstadoDB.Create;
+begin
+  Inherited Create(TBL_ESTADO, FLD_ESTADO_ID);
+end;
+
+procedure TRepositorioEstadoDB.AtribuiEstadoParaDB(const coESTADO: TESTADO;
+                                                const coSQLQuery: TSQLQuery);
+begin
+  with coSQLQuery do
+  begin
+    ParamByName(FLD_ESTADO_ID  ).AsInteger  := FID;
+    ParamByName(FLD_ESTADO_NOME).AsString   := coESTADO.NOME;
+    ParamByName(FLD_ESTADO_UF  ).AsString   := coESTADO.UF
+  end;
+end;
+
+procedure TRepositorioEstadoDB.AtribuiDBParaEstado(const coESTADO: TESTADO);
+begin
+  with UDM.dmProway.SQLSelect do
+  begin
+    coESTADO.ID   := FieldByName(FLD_ESTADO_ID  ).AsInteger;
+    coESTADO.NOME := FieldByName(FLD_ESTADO_NOME).AsString;
+    coESTADO.UF   := FieldByName(FLD_ESTADO_UF  ).AsString;
+  end;
+end;
+
+function TRepositorioEstadoDB.AchouUF(const csUF: String): Boolean;
+begin
+  UDM.dmProway.SQLSelect.Close;
+  UDM.dmProway.SQLSelect.CommandText := Format(CNT_SELECT_UNIQUE, [TBL_ESTADO
+                                                                 , FLD_ESTADO_UF]);
+  UDM.dmProway.SQLSelect.ParamByName(FLD_ESTADO_UF).AsString := csUF;
+  UDM.dmProway.SQLSelect.Open;
+
+  Result := not UDM.dmProway.SQLSelect.Eof;
+end;
+
+function TRepositorioEstadoDB.RetornaUF(const csUF: String): TESTADO;
+begin
+  Result := nil;
+  if AchouUF(csUF) then
+    begin
+      Result := TESTADO.Create;
+      AtribuiDBParaEstado(Result);
+    end;
+end;
+
+end.

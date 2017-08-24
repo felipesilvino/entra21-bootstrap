@@ -1,0 +1,17 @@
+unit UCidade;
+
+interface
+
+uses
+    UEntidade
+  ;
+
+type
+  TCIDADE = class(TENTIDADE)
+  public
+    NOME: String;
+  end;
+
+implementation
+
+end.
