@@ -11,11 +11,7 @@ uses
 type
   TdmEntra21 = class(TDataModule)
     SQLConnection: TSQLConnection;
-    SQLInsert: TSQLQuery;
-    SQLDelete: TSQLQuery;
-    SQLUpdate: TSQLQuery;
     SQLSelect: TSQLDataSet;
-    SQLTable: TSQLTable;
     procedure DataModuleCreate(Sender: TObject);
   private
     FTransaction: TDBXTransaction;

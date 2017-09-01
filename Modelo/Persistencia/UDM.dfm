@@ -1,8 +1,8 @@
 object dmEntra21: TdmEntra21
   OldCreateOrder = False
   OnCreate = DataModuleCreate
-  Height = 148
-  Width = 239
+  Height = 97
+  Width = 183
   object SQLConnection: TSQLConnection
     ConnectionName = 'IBConnection'
     DriverName = 'Firebird'
@@ -49,41 +49,13 @@ object dmEntra21: TdmEntra21
     Left = 32
     Top = 24
   end
-  object SQLInsert: TSQLQuery
-    MaxBlobSize = -1
-    Params = <>
-    SQLConnection = SQLConnection
-    Left = 104
-    Top = 24
-  end
-  object SQLDelete: TSQLQuery
-    MaxBlobSize = -1
-    Params = <>
-    SQLConnection = SQLConnection
-    Left = 179
-    Top = 24
-  end
-  object SQLUpdate: TSQLQuery
-    MaxBlobSize = -1
-    Params = <>
-    SQLConnection = SQLConnection
-    Left = 180
-    Top = 80
-  end
   object SQLSelect: TSQLDataSet
     GetMetadata = False
     DbxCommandType = 'Dbx.SQL'
     MaxBlobSize = -1
     Params = <>
     SQLConnection = SQLConnection
-    Left = 104
-    Top = 80
-  end
-  object SQLTable: TSQLTable
-    MaxBlobSize = -1
-    SQLConnection = SQLConnection
-    TableName = 'CLIENTE'
-    Left = 32
-    Top = 81
+    Left = 112
+    Top = 24
   end
 end

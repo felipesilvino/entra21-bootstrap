@@ -11,7 +11,6 @@ uses
 type
   TRepositorioDB<T: TENTIDADE, constructor> = class(TInterfacedObject, IRepositorio<T>)
   private
-    FEntidadeClasse: TEntidadeClasse;
     FNomeTabela: String;
     FNomeCampoPK: String;
     FNomeGerador: String;
@@ -22,6 +21,12 @@ type
 
   protected
     FID: Integer;
+    FEntidadeClasse: TEntidadeClasse;
+    FSQLInsert: TSQLQuery;
+    FSQLDelete: TSQLQuery;
+    FSQLUpdate: TSQLQuery;
+    FSQLSelect: TSQLDataSet;
+    FSQLTable: TSQLTable;
 
   protected
     //Prepara na query o comando SQL para fazer o insert
@@ -47,6 +52,7 @@ type
                        const csNomeTabela: String;
                        const csNomeCampoPK: String;
                        const csNomeEntidade: String);
+    destructor Destroy; override;
 
     //Excluir o registro pela PK
     procedure Exclui(const ciPK: Integer);
@@ -93,63 +99,89 @@ constructor TRepositorioDB<T>.Create(const coEntidadeClasse: TEntidadeClasse;
                                      const csNomeCampoPK: String;
                                      const csNomeEntidade: String);
 begin
+  Inherited Create;
   FEntidadeClasse := coEntidadeClasse;
   FNomeTabela     := csNomeTabela;
   FNomeCampoPK    := csNomeCampoPK;
   FNomeEntidade   := csNomeEntidade;
   FNomeGerador    := Format(CNT_NOME_GERADOR, [csNomeTabela, csNomeCampoPK]);
+
+  FSQLInsert               := TSQLQuery.Create(UDM.dmEntra21);
+  FSQLInsert.SQLConnection := dmEntra21.SQLConnection;
+
+  FSQLDelete               := TSQLQuery.Create(UDM.dmEntra21);
+  FSQLDelete.SQLConnection := dmEntra21.SQLConnection;
+
+  FSQLUpdate               := TSQLQuery.Create(UDM.dmEntra21);
+  FSQLUpdate.SQLConnection := dmEntra21.SQLConnection;
+
+  FSQLSelect               := TSQLDataSet.Create(UDM.dmEntra21);
+  FSQLSelect.SQLConnection := dmEntra21.SQLConnection;
+
+  FSQLTable                := TSQLTable.Create(UDM.dmEntra21);
+  FSQLTable.SQLConnection  := dmEntra21.SQLConnection;
+end;
+
+destructor TRepositorioDB<T>.Destroy;
+begin
+  FreeAndNil(FSQLInsert);
+  FreeAndNil(FSQLDelete);
+  FreeAndNil(FSQLUpdate);
+  FreeAndNil(FSQLSelect);
+  FreeAndNil(FSQLTable);
+  inherited;
 end;
 
 function TRepositorioDB<T>.Achou(const ciPK: Integer): Boolean;
 begin
-  dmEntra21.SQLSelect.Close;
+  FSQLSelect.Close;
   //select *
   //  from 'nome da tabela'
   // where 'campo PK' = :'campo PK'
-  dmEntra21.SQLSelect.CommandText := Format(CNT_SELECT_UNIQUE, [FNomeTabela
-                                                                 , FNomeCampoPK]);
-  dmEntra21.SQLSelect.ParamByName(FNomeCampoPK).AsInteger := ciPK;
-  dmEntra21.SQLSelect.Open;
+  FSQLSelect.CommandText := Format(CNT_SELECT_UNIQUE, [FNomeTabela
+                                                     , FNomeCampoPK]);
+  FSQLSelect.ParamByName(FNomeCampoPK).AsInteger := ciPK;
+  FSQLSelect.Open;
 
-  Result := Not dmEntra21.SQLSelect.Eof;
+  Result := Not FSQLSelect.Eof;
 end;
 
 procedure TRepositorioDB<T>.Exclui(const ciPK: Integer);
 begin
   dmEntra21.ValidaTransacaoAtiva;
 
-  dmEntra21.SQLDelete.Close;
-  dmEntra21.SQLDelete.SQL.Clear;
-  dmEntra21.SQLDelete.SQL.Add(Format(CNT_DELETE, [FNomeTabela
+  FSQLDelete.Close;
+  FSQLDelete.SQL.Clear;
+  FSQLDelete.SQL.Add(Format(CNT_DELETE, [FNomeTabela
                                                    , FNomeCampoPK]));
-  dmEntra21.SQLDelete.Prepared := True;
-  dmEntra21.SQLDelete.ParamByName(FNomeCampoPK).AsInteger := ciPK;
-  dmEntra21.SQLDelete.ExecSQL;
+  FSQLDelete.Prepared := True;
+  FSQLDelete.ParamByName(FNomeCampoPK).AsInteger := ciPK;
+  FSQLDelete.ExecSQL;
 end;
 
 procedure TRepositorioDB<T>.ExecutaAtualizacao(const ciPK: Integer);
 begin
-  dmEntra21.SQLUpdate.ParamByName(FNomeCampoPK).AsInteger := ciPK;
-  dmEntra21.SQLUpdate.ExecSQL;
+  FSQLUpdate.ParamByName(FNomeCampoPK).AsInteger := ciPK;
+  FSQLUpdate.ExecSQL;
 end;
 
 procedure TRepositorioDB<T>.ExecutaInsercao;
 begin
-  dmEntra21.SQLInsert.ExecSQL;
+  FSQLInsert.ExecSQL;
 end;
 
 procedure TRepositorioDB<T>.PreparaAtualizacao;
 begin
-  dmEntra21.SQLUpdate.Close;
+  FSQLUpdate.Close;
 
   //update 'nome da tabela'
   //   set 'nome dos campos'
   // where 'campo PK' = :'campo PK'
-  dmEntra21.SQLUpdate.SQL.Clear;
-  dmEntra21.SQLUpdate.SQL.Add(Format(CNT_UPDATE, [FNomeTabela
-                                                , RetornaParametros(CNT_FORMATACAO_UPDATE)
-                                                , FNomeCampoPK]));
-  dmEntra21.SQLUpdate.Prepared := True;
+  FSQLUpdate.SQL.Clear;
+  FSQLUpdate.SQL.Add(Format(CNT_UPDATE, [FNomeTabela
+                                       , RetornaParametros(CNT_FORMATACAO_UPDATE)
+                                       , FNomeCampoPK]));
+  FSQLUpdate.Prepared := True;
 end;
 
 procedure TRepositorioDB<T>.PreparaInsercao;
@@ -157,12 +189,12 @@ begin
   FID := RetornaNovoId;
 
   //insert into 'nome da tabela' values ('valores dos campos')
-  dmEntra21.SQLInsert.Close;
-  dmEntra21.SQLInsert.SQL.Clear;
-  dmEntra21.SQLInsert.SQL.Add(Format(CNT_INSERT, [FNomeTabela
-                                                   , RetornaParametros(CNT_FORMATACAO_INSERT)
-                                                   , FNomeCampoPK]));
-  dmEntra21.SQLInsert.Prepared := True;
+  FSQLInsert.Close;
+  FSQLInsert.SQL.Clear;
+  FSQLInsert.SQL.Add(Format(CNT_INSERT, [FNomeTabela
+                                       , RetornaParametros(CNT_FORMATACAO_INSERT)
+                                       , FNomeCampoPK]));
+  FSQLInsert.Prepared := True;
 end;
 
 function TRepositorioDB<T>.RetornaParametros(const csFormatacao: String): String;
@@ -172,11 +204,11 @@ var
 begin
   Result := EmptyStr;
 
-  dmEntra21.SQLTable.GetMetadata := True;
-  dmEntra21.SQLTable.TableName := FNomeTabela;
-  dmEntra21.SQLTable.Active := True;
+  FSQLTable.GetMetadata := True;
+  FSQLTable.TableName := FNomeTabela;
+  FSQLTable.Active := True;
 
-  for loCampo in dmEntra21.SQLTable.Fields do
+  for loCampo in FSQLTable.Fields do
     begin
       lsNomeCampo := loCampo.FieldName;
       Result      := Result + Format(csFormatacao, [lsNomeCampo]);
@@ -187,17 +219,17 @@ end;
 
 function TRepositorioDB<T>.RetornaNovoId: Integer;
 begin
-  dmEntra21.SQLSelect.Close;
-  dmEntra21.SQLSelect.CommandText := Format(CNT_SELECT_GEN_ID, [FNomeGerador]);
-  dmEntra21.SQLSelect.Open;
+  FSQLSelect.Close;
+  FSQLSelect.CommandText := Format(CNT_SELECT_GEN_ID, [FNomeGerador]);
+  FSQLSelect.Open;
 
-  Result := dmEntra21.SQLSelect.FieldByName(FLD_GEN_ID).AsInteger;
+  Result := FSQLSelect.FieldByName(FLD_GEN_ID).AsInteger;
 end;
 
 procedure TRepositorioDB<T>.Insere(const coENTIDADE: T);
 begin
   PreparaInsercao;
-  AtribuiEntidadeParaDB(coENTIDADE, dmEntra21.SQLInsert);
+  AtribuiEntidadeParaDB(coENTIDADE, FSQLInsert);
   ExecutaInsercao;
 
   coENTIDADE.ID := FID;
@@ -205,7 +237,7 @@ end;
 
 procedure TRepositorioDB<T>.AtribuiDBParaEntidade(const coENTIDADE: T);
 begin
-  coENTIDADE.ID := dmEntra21.SQLSelect.FieldByName(FLD_ENTIDADE_ID).AsInteger;
+  coENTIDADE.ID := FSQLSelect.FieldByName(FLD_ENTIDADE_ID).AsInteger;
 end;
 
 procedure TRepositorioDB<T>.AtribuiEntidadeParaDB(const coENTIDADE: T;
@@ -219,7 +251,7 @@ begin
   FID := coENTIDADE.ID;
 
   PreparaAtualizacao;
-  AtribuiEntidadeParaDB(coENTIDADE, dmEntra21.SQLUpdate);
+  AtribuiEntidadeParaDB(coENTIDADE, FSQLUpdate);
   ExecutaAtualizacao(coENTIDADE.ID);
 end;
 
