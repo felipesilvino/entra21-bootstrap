@@ -17,7 +17,7 @@ uses
   , UEntidade
   , UFrmPesquisa
   , UOpcaoPesquisa
-  , Generics.Collections, Menus
+  , Generics.Collections, Menus, PwCtrls
   ;
 
 type
@@ -37,7 +37,7 @@ type
     btnSair: TBitBtn;
     btnNovo: TBitBtn;
     pmOpcoes: TPopupMenu;
-    edCodigo: TEdit;
+    edCodigo: TIntegerEdit;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure btnSairClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -126,7 +126,7 @@ begin
         dmEntra21.FinalizaTransacao;
         TDialogo.Informacao(Format(STR_OPERACAO_COM_SUCESSO
                                  , [FRegraCRUD.NOME_ENTIDADE
-                                  , StrToIntDef(edCodigo.Text, 0)
+                                  , edCodigo.IntegerNumber
                                   , STR_EXCLUIDO]));
         LimpaCampos;
         HabilitaCampos(touIndefinida);
@@ -216,11 +216,11 @@ end;
 
 procedure TFrmCRUD.edCodigoExit(Sender: TObject);
 begin
-  if StrToIntDef(edCodigo.Text, 0) <> 0 then
+  if edCodigo.IntegerNumber <> 0 then
     try
-      FRegraCRUD.ValidaExistencia(StrToIntDef(edCodigo.Text, 0));
+      FRegraCRUD.ValidaExistencia(edCodigo.IntegerNumber);
 
-      DefineEntidadeInterno(RetornaEntidade(StrToIntDef(edCodigo.Text, 0)));
+      DefineEntidadeInterno(RetornaEntidade(edCodigo.IntegerNumber));
       PreencheFormulario;
 
       HabilitaCampos(touAtualizacao);
@@ -362,9 +362,11 @@ end;
 
 procedure TFrmCRUD.ExecutaPesquisa(const coOpcaoPesquisa: TOpcaoPesquisa);
 begin
-  edCodigo.Text := TfrmPesquisa.MostrarPesquisa(coOpcaoPesquisa);
-  if StrToIntDef(edCodigo.Text, 0) <> 0 then
+  edCodigo.IntegerNumber := TfrmPesquisa.MostrarPesquisa(coOpcaoPesquisa);
+  if edCodigo.IntegerNumber <> 0 then
+  begin
     edCodigoExit(btnLocalizar);
+  end;
 end;
 
 procedure TFrmCRUD.AdicionaOpcaoPesquisa(const coOpcaoPesquisa: TOpcaoPesquisa);

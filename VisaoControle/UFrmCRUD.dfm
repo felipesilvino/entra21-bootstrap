@@ -5,6 +5,7 @@ object FrmCRUD: TFrmCRUD
   ClientHeight = 379
   ClientWidth = 635
   Color = clSilver
+  Ctl3D = False
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -33,6 +34,7 @@ object FrmCRUD: TFrmCRUD
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentBackground = False
     ParentFont = False
     TabOrder = 0
     object lbCabecalho: TLabel
@@ -95,7 +97,7 @@ object FrmCRUD: TFrmCRUD
       TabStop = False
       OnClick = btnLocalizarClick
     end
-    object edCodigo: TEdit
+    object edCodigo: TIntegerEdit
       Left = 104
       Top = 21
       Width = 121
@@ -106,11 +108,11 @@ object FrmCRUD: TFrmCRUD
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
-      NumbersOnly = True
       ParentFont = False
       TabOrder = 1
       OnExit = edCodigoExit
       OnKeyDown = edCodigoKeyDown
+      IntegerNumber = 0
     end
   end
   object pnlBotoes: TPanel
@@ -138,7 +140,6 @@ object FrmCRUD: TFrmCRUD
       Cursor = crHandPoint
       Anchors = [akRight, akBottom]
       Caption = '&Limpar'
-      DoubleBuffered = True
       Font.Charset = ANSI_CHARSET
       Font.Color = clBlack
       Font.Height = -11
@@ -158,7 +159,6 @@ object FrmCRUD: TFrmCRUD
         BBB35555F55555575F555550555555550BBB55575555555575F5555555555555
         50BB555555555555575F555555555555550B5555555555555575}
       NumGlyphs = 2
-      ParentDoubleBuffered = False
       ParentFont = False
       TabOrder = 3
       OnClick = btnLimparClick
@@ -171,7 +171,6 @@ object FrmCRUD: TFrmCRUD
       Cursor = crHandPoint
       Anchors = [akRight, akBottom]
       Caption = '&Excluir'
-      DoubleBuffered = True
       Font.Charset = ANSI_CHARSET
       Font.Color = clBlack
       Font.Height = -11
@@ -191,7 +190,6 @@ object FrmCRUD: TFrmCRUD
         0333337FFFFFFFFF7F3333000000000003333377777777777333333330777033
         3333333337FFF7F3333333333000003333333333377777333333}
       NumGlyphs = 2
-      ParentDoubleBuffered = False
       ParentFont = False
       TabOrder = 2
       OnClick = btnExcluirClick
@@ -204,7 +202,6 @@ object FrmCRUD: TFrmCRUD
       Cursor = crHandPoint
       Anchors = [akRight, akBottom]
       Caption = '&Gravar'
-      DoubleBuffered = True
       Font.Charset = ANSI_CHARSET
       Font.Color = clBlack
       Font.Height = -11
@@ -224,7 +221,6 @@ object FrmCRUD: TFrmCRUD
         00037F7F333333337F7F000FFFFFFFFF07037F7F33333333777F000FFFFFFFFF
         0003737FFFFFFFFF7F7330099999999900333777777777777733}
       NumGlyphs = 2
-      ParentDoubleBuffered = False
       ParentFont = False
       TabOrder = 1
       OnClick = btnGravarClick
@@ -237,7 +233,6 @@ object FrmCRUD: TFrmCRUD
       Cursor = crHandPoint
       Anchors = [akRight, akBottom]
       Caption = '&Sair'
-      DoubleBuffered = True
       Font.Charset = ANSI_CHARSET
       Font.Color = clBlack
       Font.Height = -11
@@ -257,7 +252,6 @@ object FrmCRUD: TFrmCRUD
         0333337F377777337F333301111111110333337F333333337F33330111111111
         0333337FFFFFFFFF7F3333000000000003333377777777777333}
       NumGlyphs = 2
-      ParentDoubleBuffered = False
       ParentFont = False
       TabOrder = 4
       OnClick = btnSairClick
@@ -270,7 +264,6 @@ object FrmCRUD: TFrmCRUD
       Cursor = crHandPoint
       Anchors = [akLeft, akBottom]
       Caption = '&Novo'
-      DoubleBuffered = True
       Font.Charset = ANSI_CHARSET
       Font.Color = clBlack
       Font.Height = -11
@@ -290,7 +283,6 @@ object FrmCRUD: TFrmCRUD
         5555557FFFFF7755555555500000005555555577777775555555555555555555
         5555555555555555555555555555555555555555555555555555}
       NumGlyphs = 2
-      ParentDoubleBuffered = False
       ParentFont = False
       TabOrder = 0
       OnClick = btnNovoClick
