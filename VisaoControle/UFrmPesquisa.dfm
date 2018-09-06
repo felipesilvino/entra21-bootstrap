@@ -35,8 +35,6 @@ object frmPesquisa: TfrmPesquisa
       Height = 33
       Anchors = [akRight, akBottom]
       Caption = '&Sair'
-      DoubleBuffered = True
-      ParentDoubleBuffered = False
       TabOrder = 1
       OnClick = btnSairClick
     end
@@ -47,9 +45,7 @@ object frmPesquisa: TfrmPesquisa
       Height = 33
       Anchors = [akRight, akBottom]
       Caption = '&Confirmar'
-      DoubleBuffered = True
       ModalResult = 1
-      ParentDoubleBuffered = False
       TabOrder = 0
       OnClick = btnConfirmarClick
     end

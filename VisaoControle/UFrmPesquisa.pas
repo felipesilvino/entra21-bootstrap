@@ -38,6 +38,7 @@ type
     FOpcaoPesquisa  : TOpcaoPesquisa;
 
     function RetornaDataSet: TSQLDataSet;
+    procedure AjustaCamposString;
 
   public
     class function MostrarPesquisa(const coOpcaoPesquisa: TOpcaoPesquisa): Variant;
@@ -73,7 +74,7 @@ begin
     if frmPesquisa.ShowModal = mrOk then
       Result := frmPesquisa.Retorno
     else
-      Result := '';
+      Result := '0';
   finally
     FreeAndNil(frmPesquisa);
   end;
@@ -111,7 +112,67 @@ begin
   Caption             := Caption + ' - ' + FOpcaoPesquisa.NOME_PESQUISA;
   lbCabecalho.Caption := AnsiUpperCase(lbCabecalho.Caption + ' - ' + FOpcaoPesquisa.NOME_PESQUISA);
 
+  AjustaCamposString;
+
   FRetorno := 0;
+end;
+
+procedure TfrmPesquisa.AjustaCamposString;
+const
+  CNT_ADD = 3;
+var
+  DS: TDataSet;
+  BM: TBookmark;
+  I, W, VisibleColumnsCount: Integer;
+  A: array of Integer;
+  VisibleColumns: array of TColumn;
+begin
+  DS := dbgCliente.DataSource.DataSet;
+  if Assigned(DS) then
+  begin
+    VisibleColumnsCount := 0;
+    SetLength(VisibleColumns, dbgCliente.Columns.Count);
+    for I := 0 to dbgCliente.Columns.Count - 1 do
+      if Assigned(dbgCliente.Columns[I].Field) and (dbgCliente.Columns[I].Visible) then
+      begin
+        VisibleColumns[VisibleColumnsCount] := dbgCliente.Columns[I];
+        Inc(VisibleColumnsCount);
+      end;
+    SetLength(VisibleColumns, VisibleColumnsCount);
+
+    DS.DisableControls;
+    BM := DS.GetBookmark;
+    try
+      DS.First;
+      SetLength(A, VisibleColumnsCount);
+      while not DS.Eof do
+      begin
+        for I := 0 to VisibleColumnsCount - 1 do
+        begin
+            W :=  dbgCliente.Canvas.TextWidth(DS.FieldByName(VisibleColumns[I].Field.FieldName).DisplayText);
+            if A[I] < W then
+               A[I] := W;
+        end;
+        DS.Next;
+      end;
+
+      for I := 0 to VisibleColumnsCount - 1 do
+      begin
+        W := dbgCliente.Canvas.TextWidth(VisibleColumns[I].Field.FieldName);
+        if A[I] < W then
+           A[I] := W;
+      end;
+
+      for I := 0 to VisibleColumnsCount - 1 do
+        VisibleColumns[I].Width := A[I] + CNT_ADD + W;
+
+      DS.GotoBookmark(BM);
+
+    finally
+      DS.FreeBookmark(BM);
+      DS.EnableControls;
+    end;
+  end;
 end;
 
 procedure TfrmPesquisa.btnConfirmarClick(Sender: TObject);

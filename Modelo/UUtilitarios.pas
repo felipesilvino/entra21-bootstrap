@@ -10,6 +10,7 @@ uses
   , ComCtrls
   , Mask
   , UMensagens
+  , PwCtrls
   ;
 
 type
@@ -33,7 +34,7 @@ const
                                              STR_ATUALIZADO,
                                              STR_EXCLUIDO);
 const
-  CNT_COMPONENTES_VALIDADOS: array[0..8]
+  CNT_COMPONENTES_VALIDADOS: array[0..10]
     of TClass = (TEdit
                , TLabeledEdit
                , TMaskEdit
@@ -42,7 +43,9 @@ const
                , TRadioButton
                , TCheckBox
                , TStaticText
-               , TComboBox);
+               , TComboBox
+               , TIntegerEdit
+               , TFloatEdit);
 
 implementation
 
@@ -77,6 +80,10 @@ begin
         begin
           if loComponent is TComboBox then
             TComboBox(loComponent).ItemIndex := 0
+          else if loComponent is TIntegerEdit then
+            TIntegerEdit(loComponent).IntegerNumber := 0
+          else if loComponent is TFloatEdit then
+            TFloatEdit(loComponent).FloatNumber := 0
           else if (loComponent is TEdit)
                or (loComponent is TLabeledEdit)
                or (loComponent is TMaskEdit) then

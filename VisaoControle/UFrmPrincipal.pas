@@ -31,8 +31,6 @@ uses
   , DB
   ;
 
-{ Teste de alteração do joão pé de feijão ! }
-
 {$R *.dfm}
 
 procedure TFrmPrincipal.miSairClick(Sender: TObject);
