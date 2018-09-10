@@ -4,54 +4,50 @@ object dmEntra21: TdmEntra21
   Height = 97
   Width = 183
   object SQLConnection: TSQLConnection
-    ConnectionName = 'IBConnection'
-    DriverName = 'Firebird'
-    GetDriverFunc = 'getSQLDriverINTERBASE'
+    ConnectionName = 'MySQLConnection'
+    DriverName = 'MySQL'
     KeepConnection = False
-    LibraryName = 'dbx4fb.dll'
     LoginPrompt = False
     Params.Strings = (
-      'DriverUnit=DBXFirebird'
+      'DriverUnit=Data.DBXMySQL'
       
-        'DriverPackageLoader=TDBXDynalinkDriverLoader,DbxCommonDriver150.' +
+        'DriverPackageLoader=TDBXDynalinkDriverLoader,DbxCommonDriver250.' +
         'bpl'
       
         'DriverAssemblyLoader=Borland.Data.TDBXDynalinkDriverLoader,Borla' +
-        'nd.Data.DbxCommonDriver,Version=15.0.0.0,Culture=neutral,PublicK' +
+        'nd.Data.DbxCommonDriver,Version=24.0.0.0,Culture=neutral,PublicK' +
         'eyToken=91d62ebb5b0d1b1b'
       
-        'MetaDataPackageLoader=TDBXFirebirdMetaDataCommandFactory,DbxFire' +
-        'birdDriver150.bpl'
+        'MetaDataPackageLoader=TDBXMySqlMetaDataCommandFactory,DbxMySQLDr' +
+        'iver250.bpl'
       
-        'MetaDataAssemblyLoader=Borland.Data.TDBXFirebirdMetaDataCommandF' +
-        'actory,Borland.Data.DbxFirebirdDriver,Version=15.0.0.0,Culture=n' +
-        'eutral,PublicKeyToken=91d62ebb5b0d1b1b'
-      'GetDriverFunc=getSQLDriverINTERBASE'
-      'LibraryName=dbx4fb.dll'
-      'VendorLib=fdbclient.dll'
-      'Database=localhost:T:\Projetos\Aeroporto\DB\AEROPORTO.FDB'
-      'User_Name=sysdba'
-      'Password=masterkey'
-      'Role=RoleName'
+        'MetaDataAssemblyLoader=Borland.Data.TDBXMySqlMetaDataCommandFact' +
+        'ory,Borland.Data.DbxMySQLDriver,Version=24.0.0.0,Culture=neutral' +
+        ',PublicKeyToken=91d62ebb5b0d1b1b'
+      'GetDriverFunc=getSQLDriverMYSQL'
+      'LibraryName=dbxmys.dll'
+      'LibraryNameOsx=libsqlmys.dylib'
+      'VendorLib=LIBMYSQL.dll'
+      'VendorLibWin64=libmysql.dll'
+      'VendorLibOsx=libmysqlclient.dylib'
       'MaxBlobSize=-1'
-      'LocaleCode=0000'
-      'IsolationLevel=ReadCommitted'
-      'SQLDialect=3'
-      'CommitRetain=False'
-      'WaitOnLocks=True'
-      'TrimChar=False'
+      'DriverName=MySQL'
+      'HostName=localhost'
+      'Database=database_name'
+      'User_Name=user'
+      'Password=password'
+      'ServerCharSet='
       'BlobSize=-1'
       'ErrorResourceFile='
-      'RoleName=RoleName'
-      'ServerCharSet='
-      'Trim Char=False')
-    VendorLib = 'fbclient.dll'
+      'LocaleCode=0000'
+      'Compressed=False'
+      'Encrypted=False'
+      'ConnectTimeout=60')
     Left = 32
     Top = 24
   end
   object SQLSelect: TSQLDataSet
     GetMetadata = False
-    DbxCommandType = 'Dbx.SQL'
     MaxBlobSize = -1
     Params = <>
     SQLConnection = SQLConnection

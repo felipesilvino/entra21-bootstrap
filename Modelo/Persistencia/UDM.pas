@@ -4,8 +4,7 @@ interface
 
 uses
   SysUtils, Classes, DB, SqlExpr, FMTBcd
-  , UMensagens, DBXFirebird, DBXInterBase
-  , DBXCommon
+  , UMensagens, DBXCommon, Data.DBXMySQL
   ;
 
 type
