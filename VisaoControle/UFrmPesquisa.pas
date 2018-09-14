@@ -4,10 +4,11 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, Buttons, ExtCtrls, FMTBcd, DB, SqlExpr, Grids, DBGrids , Provider, DBClient
+  Dialogs, StdCtrls, Buttons, ExtCtrls, FMTBcd, DB, SqlExpr, Grids, DBGrids
   , UEntidade
   , Generics.Collections
   , UOpcaoPesquisa
+  , UListaVisualizacao
   ;
 
 type
@@ -30,15 +31,12 @@ type
     procedure edPesquisaKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure dbgClienteKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure cbOpcoesChange(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
-    FDataSource     : TDataSource;
-    FDataSetProvider: TDataSetProvider;
-    FClientDataSet  : TClientDataSet;
-    FRetorno        : Variant;
-    FOpcaoPesquisa  : TOpcaoPesquisa;
-
-    function RetornaDataSet: TSQLDataSet;
-    procedure AjustaCamposString;
+    FRetorno          : Variant;
+    FOpcaoPesquisa    : TOpcaoPesquisa;
+    FListaVisualizacao: TListaVisualizacao;
 
   public
     class function MostrarPesquisa(const coOpcaoPesquisa: TOpcaoPesquisa): Variant;
@@ -48,17 +46,13 @@ type
     property OpcaoPesquisa: TOpcaoPesquisa read FOpcaoPesquisa write FOpcaoPesquisa;
   end;
 
-const
-  CNT_DATA_SET_PROVIDER_NAME = 'dspPesquisa';
-  CNT_SELECT_ALL             = 'select * from %s';
-
 implementation
+
+{$R *.dfm}
 
 uses
     UDM
   ;
-
-{$R *.dfm}
 
 { TfrmPesquisa }
 
@@ -80,109 +74,24 @@ begin
   end;
 end;
 
-function TfrmPesquisa.RetornaDataSet: TSQLDataSet;
-begin
-  dmEntra21.SQLSelect.Close;
-
-  //select *
-  //  from 'nome da tabela'
-  dmEntra21.SQLSelect.CommandText := FOpcaoPesquisa.SQL;
-  dmEntra21.SQLSelect.Open;
-
-  Result := dmEntra21.SQLSelect;
-end;
-
 procedure TfrmPesquisa.Inicializa;
 begin
-  FDataSetProvider         := TDataSetProvider.Create(Self);
-  FDataSetProvider.Name    := CNT_DATA_SET_PROVIDER_NAME;
-  FDataSetProvider.DataSet := RetornaDataSet;
-
-  FClientDataSet              := TClientDataSet.Create(Self);
-  FClientDataSet.ProviderName := CNT_DATA_SET_PROVIDER_NAME;
-  FClientDataSet.ReadOnly     := True;
-  FClientDataSet.Active       := True;
-
-  FDataSource         := TDataSource.Create(Self);
-  FDataSource.DataSet := FClientDataSet;
-  FDataSource.Enabled := True;
-
-  dbgCliente.DataSource := FDataSource;
-
   Caption             := Caption + ' - ' + FOpcaoPesquisa.NOME_PESQUISA;
   lbCabecalho.Caption := AnsiUpperCase(lbCabecalho.Caption + ' - ' + FOpcaoPesquisa.NOME_PESQUISA);
 
-  AjustaCamposString;
+  FListaVisualizacao.CarregaPesquisa(FOpcaoPesquisa);
 
   FRetorno := 0;
 end;
 
-procedure TfrmPesquisa.AjustaCamposString;
-const
-  CNT_ADD = 3;
-var
-  DS: TDataSet;
-  BM: TBookmark;
-  I, W, VisibleColumnsCount: Integer;
-  A: array of Integer;
-  VisibleColumns: array of TColumn;
-begin
-  DS := dbgCliente.DataSource.DataSet;
-  if Assigned(DS) then
-  begin
-    VisibleColumnsCount := 0;
-    SetLength(VisibleColumns, dbgCliente.Columns.Count);
-    for I := 0 to dbgCliente.Columns.Count - 1 do
-      if Assigned(dbgCliente.Columns[I].Field) and (dbgCliente.Columns[I].Visible) then
-      begin
-        VisibleColumns[VisibleColumnsCount] := dbgCliente.Columns[I];
-        Inc(VisibleColumnsCount);
-      end;
-    SetLength(VisibleColumns, VisibleColumnsCount);
-
-    DS.DisableControls;
-    BM := DS.GetBookmark;
-    try
-      DS.First;
-      SetLength(A, VisibleColumnsCount);
-      while not DS.Eof do
-      begin
-        for I := 0 to VisibleColumnsCount - 1 do
-        begin
-            W :=  dbgCliente.Canvas.TextWidth(DS.FieldByName(VisibleColumns[I].Field.FieldName).DisplayText);
-            if A[I] < W then
-               A[I] := W;
-        end;
-        DS.Next;
-      end;
-
-      for I := 0 to VisibleColumnsCount - 1 do
-      begin
-        W := dbgCliente.Canvas.TextWidth(VisibleColumns[I].Field.FieldName);
-        if A[I] < W then
-           A[I] := W;
-      end;
-
-      for I := 0 to VisibleColumnsCount - 1 do
-        VisibleColumns[I].Width := A[I] + CNT_ADD + W;
-
-      DS.GotoBookmark(BM);
-
-    finally
-      DS.FreeBookmark(BM);
-      DS.EnableControls;
-    end;
-  end;
-end;
-
 procedure TfrmPesquisa.btnConfirmarClick(Sender: TObject);
 begin
-  FRetorno := FClientDataSet.FieldValues[FOpcaoPesquisa.NOME_CAMPO_RETORNO];
+  FRetorno := FListaVisualizacao.RetornaSelecionado(FOpcaoPesquisa.NOME_CAMPO_RETORNO);
 end;
 
 procedure TfrmPesquisa.dbgClienteDblClick(Sender: TObject);
 begin
-  FRetorno    := FClientDataSet.FieldValues[FOpcaoPesquisa.NOME_CAMPO_RETORNO];
+  FRetorno    := FListaVisualizacao.RetornaSelecionado(FOpcaoPesquisa.NOME_CAMPO_RETORNO);
   ModalResult := mrOk;
 end;
 
@@ -193,7 +102,17 @@ end;
 
 procedure TfrmPesquisa.cbOpcoesChange(Sender: TObject);
 begin
-  FClientDataSet.IndexFieldNames := cbOpcoes.Text;
+  FListaVisualizacao.DefineIndice(cbOpcoes.Text)
+end;
+
+procedure TfrmPesquisa.FormCreate(Sender: TObject);
+begin
+  FListaVisualizacao := TListaVisualizacao.Create(dbgCliente);
+end;
+
+procedure TfrmPesquisa.FormDestroy(Sender: TObject);
+begin
+  FreeAndNil(FListaVisualizacao);
 end;
 
 procedure TfrmPesquisa.FormShow(Sender: TObject);
@@ -203,14 +122,15 @@ begin
   for lsCampo in FOpcaoPesquisa.FILTROS do
     cbOpcoes.Items.Add(lsCampo);
 
-  cbOpcoes.ItemIndex             := 0;
-  FClientDataSet.IndexFieldNames := cbOpcoes.Text;
+  cbOpcoes.ItemIndex := 0;
+
+  FListaVisualizacao.DefineIndice(cbOpcoes.Text);
+  FListaVisualizacao.DefineTermos([edPesquisa.Text]);
 end;
 
 procedure TfrmPesquisa.edPesquisaKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
-  FClientDataSet.FindNearest([edPesquisa.Text]);
-  FClientDataSet.GotoNearest;
+  FListaVisualizacao.DefineTermos([edPesquisa.Text]);
 end;
 
 procedure TfrmPesquisa.dbgClienteKeyDown(Sender: TObject;var Key: Word; Shift: TShiftState);
@@ -218,7 +138,7 @@ begin
   case Key of
     VK_RETURN:
       begin
-        FRetorno    := FClientDataSet.FieldValues[FOpcaoPesquisa.NOME_CAMPO_RETORNO];
+        FRetorno    := FListaVisualizacao.RetornaSelecionado(FOpcaoPesquisa.NOME_CAMPO_RETORNO);
         ModalResult := mrOk;
       end;
     VK_ESCAPE: ModalResult := mrCancel;

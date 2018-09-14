@@ -13,7 +13,10 @@ uses
   UEntidade in 'Modelo\Persistencia\UEntidade.pas',
   URepositorio in 'Modelo\Persistencia\URepositorio.pas',
   URepositorioDB in 'Modelo\Persistencia\URepositorioDB.pas',
-  URegraCRUD in 'Modelo\Regra\URegraCRUD.pas';
+  URegraCRUD in 'Modelo\Regra\URegraCRUD.pas',
+  UFrmPesquisa in 'VisaoControle\UFrmPesquisa.pas' {frmPesquisa},
+  UListaVisualizacao in 'Modelo\UListaVisualizacao.pas',
+  UFrmTeste in 'VisaoControle\UFrmTeste.pas' {FrmTeste};
 
 {$R *.res}
 
@@ -21,5 +24,6 @@ begin
   Application.Initialize;
   Application.CreateForm(TFrmPrincipal, FrmPrincipal);
   Application.CreateForm(TdmEntra21, dmEntra21);
+  //Application.CreateForm(TFrmTeste, FrmTeste);
   Application.Run;
 end.
