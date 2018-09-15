@@ -28,6 +28,7 @@ type
     procedure CarregaPesquisa(const coOpcaoPesquisa: TOpcaoPesquisa);
     procedure DefineIndice(const csNomeIndice: String);
     procedure DefineTermos(const csTermos: array of const);
+    procedure AtualizaPesquisa;
 
     function RetornaSelecionado(const csNomeCampo: String): Variant;
   end;
@@ -38,6 +39,7 @@ uses
     UDM
   , Forms
   , SysUtils
+  , Classes
   ;
 
 const
@@ -77,6 +79,14 @@ end;
 function TListaVisualizacao.RetornaSelecionado(const csNomeCampo: String): Variant;
 begin
   Result := FClientDataSet.FieldValues[csNomeCampo];
+end;
+
+procedure TListaVisualizacao.AtualizaPesquisa;
+begin
+  dmEntra21.SQLSelect.Refresh;
+  FClientDataSet.Refresh;
+
+  AjustaCamposString;
 end;
 
 procedure TListaVisualizacao.CarregaPesquisa(const coOpcaoPesquisa: TOpcaoPesquisa);
@@ -142,6 +152,8 @@ begin
         end;
         DS.Next;
       end;
+
+      W := 0;
 
       for I := 0 to VisibleColumnsCount - 1 do
       begin

@@ -13,8 +13,11 @@ type
     mmPrincipal: TMainMenu;
     miSair: TMenuItem;
     sbPrincipal: TStatusBar;
+    miCadastro: TMenuItem;
+    miUsuario: TMenuItem;
     procedure miSairClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure miUsuarioClick(Sender: TObject);
   private
     { Private declaration }
   public
@@ -29,6 +32,7 @@ implementation
 uses
     UDM
   , DB
+  , UFrmCadastroUsuario
   ;
 
 {$R *.dfm}
@@ -36,6 +40,11 @@ uses
 procedure TFrmPrincipal.miSairClick(Sender: TObject);
 begin
   Close;
+end;
+
+procedure TFrmPrincipal.miUsuarioClick(Sender: TObject);
+begin
+  TFrmCadastroUsuario.Create(Self);
 end;
 
 procedure TFrmPrincipal.FormShow(Sender: TObject);

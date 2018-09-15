@@ -129,6 +129,22 @@
             <Form>FrmTeste</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="Modelo\Regra\URegraCRUDUsuario.pas"/>
+        <DCCReference Include="Modelo\Persistencia\URepositorioUsuario.pas"/>
+        <DCCReference Include="Modelo\Persistencia\UUsuario.pas"/>
+        <DCCReference Include="Modelo\UUsuarioLogado.pas"/>
+        <DCCReference Include="VisaoControle\UFrmCadastroUsuario.pas">
+            <Form>FrmCadastroUsuario</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="VisaoControle\UFrmLogin.pas">
+            <Form>FrmLogin</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <None Include="SQL\METADATA.SQL"/>
+        <None Include="SQL\VALORES_PADRAO.SQL"/>
+        <None Include="..\..\..\..\RAD Studio\Projects\aeroporto\SQL\VIEWS.SQL"/>
+        <None Include="SQL\VIEWS.SQL"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -182,9 +198,33 @@
                 <Platform value="Win32">True</Platform>
             </Platforms>
             <Deployment Version="3">
+                <DeployFile LocalName="SQL\VALORES_PADRAO.SQL" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="SQL\VIEWS.SQL" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployFile LocalName="Run\Bootstrap.exe" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>Bootstrap.exe</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="..\..\..\..\RAD Studio\Projects\aeroporto\SQL\VIEWS.SQL" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="SQL\METADATA.SQL" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>

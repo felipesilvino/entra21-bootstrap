@@ -34,6 +34,7 @@ object FrmTeste: TFrmTeste
     TitleFont.Height = -11
     TitleFont.Name = 'Tahoma'
     TitleFont.Style = []
+    OnDrawColumnCell = dbgPilotosDrawColumnCell
   end
   object dbgEquipes: TDBGrid
     Left = 0

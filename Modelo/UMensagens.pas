@@ -4,14 +4,23 @@ interface
 
 resourcestring
   //Geral
-  STR_ATENCAO                 = 'Atenção';
-  STR_CAPTION_ABA_CONSULTAS   = '%d - %s...';
-  STR_TODOS                   = 'Todos';
-  STR_ATUALIZADO              = 'atualizado(a)';
-  STR_GRAVADO                 = 'gravado(a)';
-  STR_EXCLUIDO                = 'excluido(a)';
-  STR_OPERACAO_COM_SUCESSO    = '%s com código %d %s com sucesso.';
-  STR_ENTIDADE_NAO_ENCONTRADA = '%s com código %d não foi encontrado(a)';
+  STR_ATENCAO                        = 'Atenção';
+  STR_CAPTION_ABA_CONSULTAS          = '%d - %s...';
+  STR_TODOS                          = 'Todos';
+  STR_ATUALIZADO                     = 'atualizado(a)';
+  STR_GRAVADO                        = 'gravado(a)';
+  STR_EXCLUIDO                       = 'excluido(a)';
+  STR_OPERACAO_COM_SUCESSO           = '%s com código %d %s com sucesso.';
+  STR_ENTIDADE_NAO_ENCONTRADA        = '%s com código %d não foi encontrado(a)';
+
+  //Usuário
+  STR_SENHA_NAO_SEGURA           = 'Senha digitada não é segura, senha deve ter no mínimo %d caracteres';
+  STR_SENHAS_NAO_CONFEREM        = 'Senhas não conferem';
+  STR_USUARIO_NOME_NAO_INFORMADO = 'Nome do usuário não foi informado';
+  STR_SENHA_ATUAL_NAO_CONFERE    = 'Senha atual não confere';
+
+  //Login
+  STR_USUARIO_OU_SENHA_SAO_INVALIDOS = 'Usuário ou senha são inválidos';
 
   //Entidade
   STR_ENTIDADE_GRAVADA_COM_SUCESSO    = '%s gravado(a) com sucesso! Código gerado: %d.';

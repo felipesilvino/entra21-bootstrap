@@ -18,6 +18,8 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure btnMostraClick(Sender: TObject);
+    procedure dbgPilotosDrawColumnCell(Sender: TObject; const Rect: TRect;
+      DataCol: Integer; Column: TColumn; State: TGridDrawState);
   private
     FListaPilotos: TListaVisualizacao;
     FListaEquipes: TListaVisualizacao;
@@ -44,9 +46,17 @@ begin
                     , FListaEquipes.RetornaSelecionado('Nome')]));
 end;
 
+procedure TFrmTeste.dbgPilotosDrawColumnCell(Sender: TObject; const Rect: TRect;
+  DataCol: Integer; Column: TColumn; State: TGridDrawState);
+begin
+  if dbgPilotos.DataSource.DataSet.FieldByName('País').AsString = 'Brasil' then
+  begin
+    dbgPilotos.Canvas.Brush.Color := $00A4FBAE;
+    dbgPilotos.DefaultDrawColumnCell(Rect, DataCol, Column, State);
+  end;
+end;
+
 procedure TFrmTeste.FormCreate(Sender: TObject);
-var
-  OpcaoVisualicacao: TOpcaoPesquisa;
 begin
   inherited;
 

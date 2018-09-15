@@ -7,6 +7,7 @@ type
 
 const
   CNT_MODO_PERSISTENCIA_ATUAL: TModoPersistencia = mpDB;
+  CNT_MINIMO_CARACTERES_SENHA = 8;
 
 implementation
 

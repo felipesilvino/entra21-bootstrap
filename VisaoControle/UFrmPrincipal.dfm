@@ -30,6 +30,13 @@ object FrmPrincipal: TFrmPrincipal
   object mmPrincipal: TMainMenu
     Left = 640
     Top = 8
+    object miCadastro: TMenuItem
+      Caption = 'Cadastro'
+      object miUsuario: TMenuItem
+        Caption = 'Usu'#225'rio'
+        OnClick = miUsuarioClick
+      end
+    end
     object miSair: TMenuItem
       Caption = '&Sair'
       OnClick = miSairClick

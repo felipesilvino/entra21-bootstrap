@@ -33,7 +33,7 @@ object dmEntra21: TdmEntra21
       'MaxBlobSize=-1'
       'DriverName=MySQL'
       'HostName=localhost'
-      'Database=automobilismo'
+      'Database=bootstrap'
       'User_Name=delphi'
       'Password=senh@123'
       'ServerCharSet='
