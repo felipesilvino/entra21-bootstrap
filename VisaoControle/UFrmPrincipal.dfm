@@ -14,6 +14,7 @@ object FrmPrincipal: TFrmPrincipal
   Menu = mmPrincipal
   OldCreateOrder = False
   WindowState = wsMaximized
+  OnCreate = FormCreate
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -36,6 +37,9 @@ object FrmPrincipal: TFrmPrincipal
         Caption = 'Usu'#225'rio'
         OnClick = miUsuarioClick
       end
+    end
+    object miTemas: TMenuItem
+      Caption = 'Temas'
     end
     object miSair: TMenuItem
       Caption = '&Sair'

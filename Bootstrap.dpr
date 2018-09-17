@@ -1,7 +1,11 @@
 program Bootstrap;
 
 uses
-  Forms,
+  Vcl.Forms,
+  Vcl.Themes,
+  Vcl.Styles,
+  Vcl.Controls,
+  System.SysUtils,
   UFrmPrincipal in 'VisaoControle\UFrmPrincipal.pas' {FrmPrincipal},
   UFrmCRUD in 'VisaoControle\UFrmCRUD.pas' {FrmCRUD},
   UUtilitarios in 'Modelo\UUtilitarios.pas',
@@ -27,10 +31,13 @@ uses
 {$R *.res}
 
 begin
-  {$DEFINE DESENV}
+  {$DEFINE PROD}
 
   Application.Initialize;
+
+  TStyleManager.TrySetStyle('Windows10 SlateGray');
   Application.CreateForm(TdmEntra21, dmEntra21);
+
   {$IFDEF PROD}
   FrmLogin := TFrmLogin.Create(nil);
   if FrmLogin.ShowModal = mrYes then

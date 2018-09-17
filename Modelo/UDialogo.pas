@@ -3,8 +3,8 @@ unit UDialogo;
 interface
 
 uses
-    Windows
-  , SysUtils
+    Winapi.Windows
+  , System.SysUtils
   ;
 
 type

@@ -3,10 +3,8 @@ unit UFrmPrincipal;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, Menus
-  , StdCtrls, ComCtrls
-  ;
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Menus, Vcl.StdCtrls, Vcl.ComCtrls;
 
 type
   TFrmPrincipal = class(TForm)
@@ -15,13 +13,13 @@ type
     sbPrincipal: TStatusBar;
     miCadastro: TMenuItem;
     miUsuario: TMenuItem;
+    miTemas: TMenuItem;
     procedure miSairClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure miUsuarioClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
-    { Private declaration }
-  public
-    { Public declarations }
+    procedure mmStyleMenuItemClick(Sender: TObject);
   end;
 
 var
@@ -33,6 +31,7 @@ uses
     UDM
   , DB
   , UFrmCadastroUsuario
+  , Vcl.Themes
   ;
 
 {$R *.dfm}
@@ -45,6 +44,27 @@ end;
 procedure TFrmPrincipal.miUsuarioClick(Sender: TObject);
 begin
   TFrmCadastroUsuario.Create(Self);
+end;
+
+procedure TFrmPrincipal.mmStyleMenuItemClick(Sender: TObject);
+begin
+  TStyleManager.SetStyle(TMenuItem(Sender).Hint);
+end;
+
+procedure TFrmPrincipal.FormCreate(Sender: TObject);
+var
+  StyleName: String;
+  MenuItem: TMenuItem;
+begin
+  for StyleName in TStyleManager.StyleNames do
+    begin
+      MenuItem         := mmPrincipal.CreateMenuItem;
+      MenuItem.Caption := StyleName;
+      MenuItem.Hint    := StyleName;
+      MenuItem.OnClick := mmStyleMenuItemClick;
+
+      miTemas.Add(MenuItem);
+    end;
 end;
 
 procedure TFrmPrincipal.FormShow(Sender: TObject);

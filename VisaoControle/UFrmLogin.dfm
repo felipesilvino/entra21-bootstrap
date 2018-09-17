@@ -56,7 +56,6 @@ object FrmLogin: TFrmLogin
       Width = 122
       Height = 51
       Caption = 'Entrar'
-      DoubleBuffered = True
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -13
@@ -119,7 +118,6 @@ object FrmLogin: TFrmLogin
         FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00
         FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF
         00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FF}
-      ParentDoubleBuffered = False
       ParentFont = False
       Spacing = 15
       TabOrder = 0
@@ -131,7 +129,6 @@ object FrmLogin: TFrmLogin
       Width = 122
       Height = 51
       Caption = 'Cancelar'
-      DoubleBuffered = True
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -13
@@ -194,7 +191,6 @@ object FrmLogin: TFrmLogin
         FF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00
         FFFF00FFFF00FFFF00FFFF00FFB4B2B2B4B2B2B0B0B0B0B0B0B0B0B0ADACACFF
         00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FFFF00FF}
-      ParentDoubleBuffered = False
       ParentFont = False
       Spacing = 15
       TabOrder = 1
