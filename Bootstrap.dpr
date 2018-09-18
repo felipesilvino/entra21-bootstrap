@@ -35,7 +35,6 @@ begin
 
   Application.Initialize;
 
-  TStyleManager.TrySetStyle('Windows10 SlateGray');
   Application.CreateForm(TdmEntra21, dmEntra21);
 
   {$IFDEF PROD}

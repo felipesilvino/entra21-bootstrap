@@ -24,6 +24,7 @@ type
   private
     procedure miStyleMenuItemClick(Sender: TObject);
     procedure AtualizaUsuarioLogado;
+    procedure FechaFormulariosFilhos;
   end;
 
 var
@@ -48,16 +49,21 @@ begin
 end;
 
 procedure TFrmPrincipal.miLogoffClick(Sender: TObject);
+
 begin
   TUsuarioLogado.Logoff;
   Application.CreateForm(TFrmLogin, FrmLogin);
   if FrmLogin.ShowModal = mrYes then
-    begin
-      FreeAndNil(FrmLogin);
-      AtualizaUsuarioLogado;
-    end
+  begin
+    FreeAndNil(FrmLogin);
+
+    FechaFormulariosFilhos;
+    AtualizaUsuarioLogado;
+  end
   else
+  begin
     Close;
+  end;
 end;
 
 procedure TFrmPrincipal.miUsuarioClick(Sender: TObject);
@@ -76,20 +82,30 @@ begin
     'Usuário: ' + TUsuarioLogado.USUARIO.NOME;
 end;
 
+procedure TFrmPrincipal.FechaFormulariosFilhos;
+var
+  Indice: Integer;
+begin
+  for Indice := 0 to Pred(MDIChildCount) do
+  begin
+    MDIChildren[Indice].Free;
+  end;
+end;
+
 procedure TFrmPrincipal.FormCreate(Sender: TObject);
 var
   StyleName: String;
   miStyleMenuItem: TMenuItem;
 begin
   for StyleName in TStyleManager.StyleNames do
-    begin
-      miStyleMenuItem         := mmPrincipal.CreateMenuItem;
-      miStyleMenuItem.Caption := StyleName;
-      miStyleMenuItem.Hint    := StyleName;
-      miStyleMenuItem.OnClick := miStyleMenuItemClick;
+  begin
+    miStyleMenuItem         := mmPrincipal.CreateMenuItem;
+    miStyleMenuItem.Caption := StyleName;
+    miStyleMenuItem.Hint    := StyleName;
+    miStyleMenuItem.OnClick := miStyleMenuItemClick;
 
-      miTemas.Add(miStyleMenuItem);
-    end;
+    miTemas.Add(miStyleMenuItem);
+  end;
 end;
 
 procedure TFrmPrincipal.FormShow(Sender: TObject);
