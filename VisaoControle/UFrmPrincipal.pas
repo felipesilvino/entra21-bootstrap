@@ -10,16 +10,20 @@ type
   TFrmPrincipal = class(TForm)
     mmPrincipal: TMainMenu;
     miSair: TMenuItem;
-    sbPrincipal: TStatusBar;
     miCadastro: TMenuItem;
     miUsuario: TMenuItem;
     miTemas: TMenuItem;
-    procedure miSairClick(Sender: TObject);
+    miLogoff: TMenuItem;
+    miEncerrarAplicacao: TMenuItem;
+    sbPrincipal: TStatusBar;
     procedure FormShow(Sender: TObject);
     procedure miUsuarioClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure miLogoffClick(Sender: TObject);
+    procedure miEncerrarAplicacaoClick(Sender: TObject);
   private
-    procedure mmStyleMenuItemClick(Sender: TObject);
+    procedure miStyleMenuItemClick(Sender: TObject);
+    procedure AtualizaUsuarioLogado;
   end;
 
 var
@@ -32,13 +36,28 @@ uses
   , DB
   , UFrmCadastroUsuario
   , Vcl.Themes
+  , UUsuarioLogado
+  , UFrmLogin
   ;
 
 {$R *.dfm}
 
-procedure TFrmPrincipal.miSairClick(Sender: TObject);
+procedure TFrmPrincipal.miEncerrarAplicacaoClick(Sender: TObject);
 begin
   Close;
+end;
+
+procedure TFrmPrincipal.miLogoffClick(Sender: TObject);
+begin
+  TUsuarioLogado.Logoff;
+  Application.CreateForm(TFrmLogin, FrmLogin);
+  if FrmLogin.ShowModal = mrYes then
+    begin
+      FreeAndNil(FrmLogin);
+      AtualizaUsuarioLogado;
+    end
+  else
+    Close;
 end;
 
 procedure TFrmPrincipal.miUsuarioClick(Sender: TObject);
@@ -46,24 +65,30 @@ begin
   TFrmCadastroUsuario.Create(Self);
 end;
 
-procedure TFrmPrincipal.mmStyleMenuItemClick(Sender: TObject);
+procedure TFrmPrincipal.miStyleMenuItemClick(Sender: TObject);
 begin
   TStyleManager.SetStyle(TMenuItem(Sender).Hint);
+end;
+
+procedure TFrmPrincipal.AtualizaUsuarioLogado;
+begin
+  sbPrincipal.Panels[1].Text :=
+    'Usuário: ' + TUsuarioLogado.USUARIO.NOME;
 end;
 
 procedure TFrmPrincipal.FormCreate(Sender: TObject);
 var
   StyleName: String;
-  MenuItem: TMenuItem;
+  miStyleMenuItem: TMenuItem;
 begin
   for StyleName in TStyleManager.StyleNames do
     begin
-      MenuItem         := mmPrincipal.CreateMenuItem;
-      MenuItem.Caption := StyleName;
-      MenuItem.Hint    := StyleName;
-      MenuItem.OnClick := mmStyleMenuItemClick;
+      miStyleMenuItem         := mmPrincipal.CreateMenuItem;
+      miStyleMenuItem.Caption := StyleName;
+      miStyleMenuItem.Hint    := StyleName;
+      miStyleMenuItem.OnClick := miStyleMenuItemClick;
 
-      miTemas.Add(MenuItem);
+      miTemas.Add(miStyleMenuItem);
     end;
 end;
 
@@ -71,6 +96,8 @@ procedure TFrmPrincipal.FormShow(Sender: TObject);
 begin
   sbPrincipal.Panels[0].Text :=
     'Banco de Dados: ' + dmEntra21.SQLConnection.Params.Values[CNT_DATA_BASE];
+
+  AtualizaUsuarioLogado;
 end;
 
 end.

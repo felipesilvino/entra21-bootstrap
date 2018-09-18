@@ -76,6 +76,7 @@ const
   CNT_SELECT_ALL        = 'select * from %s order by %s';
   CNT_SELECT_UNIQUE     = 'select * from %s where %s = :%1:s';
   CNT_SELECT_GEN_ID     = 'select gen_id(%s, 1) from RDB$DATABASE';
+  CNT_LAST_INSERT_ID    = 'select last_insert_id() as ID';
   CNT_INSERT            = 'insert into %s values (%s)';
   CNT_NOME_GERADOR      = 'gen_%s_%s';
   CNT_UPDATE            = 'update %s set %s where %s = :%2:s';
@@ -96,7 +97,7 @@ uses
   , DB
   ;
 
-{ TPersisteDB }
+{ TRepositorioDB<T> }
 
 constructor TRepositorioDB<T>.Create(const coEntidadeClasse: TEntidadeClasse;
                                      const csNomeTabela: String;
@@ -172,6 +173,15 @@ end;
 procedure TRepositorioDB<T>.ExecutaInsercao;
 begin
   FSQLInsert.ExecSQL;
+
+  if dmEntra21.SQLConnection.DriverName = 'MySQL' then
+  begin
+    FSQLSelect.Close;
+    FSQLSelect.CommandText := CNT_LAST_INSERT_ID;
+    FSQLSelect.Open;
+
+    FID := FSQLSelect.FieldByName(FLD_ENTIDADE_ID).AsInteger;
+  end;
 end;
 
 procedure TRepositorioDB<T>.PreparaAtualizacao;
@@ -242,11 +252,18 @@ end;
 
 function TRepositorioDB<T>.RetornaNovoId: Integer;
 begin
-  FSQLSelect.Close;
-  FSQLSelect.CommandText := Format(CNT_SELECT_GEN_ID, [FNomeGerador]);
-  FSQLSelect.Open;
+  if dmEntra21.SQLConnection.DriverName = 'MySQL' then
+  begin
+    Result := 0;
+  end
+  else
+  begin
+    FSQLSelect.Close;
+    FSQLSelect.CommandText := Format(CNT_SELECT_GEN_ID, [FNomeGerador]);
+    FSQLSelect.Open;
 
-  Result := FSQLSelect.FieldByName(FLD_GEN_ID).AsInteger;
+    Result := FSQLSelect.FieldByName(FLD_GEN_ID).AsInteger;
+  end;
 end;
 
 procedure TRepositorioDB<T>.Insere(const coENTIDADE: T);

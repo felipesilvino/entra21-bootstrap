@@ -175,7 +175,6 @@ object FrmCRUD: TFrmCRUD
       ParentFont = False
       TabOrder = 3
       OnClick = btnLimparClick
-      ExplicitTop = 5
     end
     object btnExcluir: TBitBtn
       Left = 283
@@ -220,7 +219,6 @@ object FrmCRUD: TFrmCRUD
       ParentFont = False
       TabOrder = 2
       OnClick = btnExcluirClick
-      ExplicitTop = 5
     end
     object btnGravar: TBitBtn
       Left = 166
@@ -265,7 +263,6 @@ object FrmCRUD: TFrmCRUD
       ParentFont = False
       TabOrder = 1
       OnClick = btnGravarClick
-      ExplicitTop = 5
     end
     object btnSair: TBitBtn
       Left = 517
@@ -310,7 +307,6 @@ object FrmCRUD: TFrmCRUD
       ParentFont = False
       TabOrder = 4
       OnClick = btnSairClick
-      ExplicitTop = 5
     end
     object btnNovo: TBitBtn
       Left = 4
@@ -355,7 +351,6 @@ object FrmCRUD: TFrmCRUD
       ParentFont = False
       TabOrder = 0
       OnClick = btnNovoClick
-      ExplicitTop = 5
     end
   end
   object pmOpcoes: TPopupMenu
